@@ -1,6 +1,6 @@
 UNAME_S := $(shell uname -s)
 
-NAME	= SCOP
+NAME	= ft_vox
 
 CXX		= c++
 CC		= cc
@@ -46,7 +46,8 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/math/Vec4.cpp \
 				srcs/parser/Tokenizer.cpp \
 				srcs/parser/BMP.cpp \
-				srcs/validate/MeshDiagnostics.cpp
+				srcs/validate/MeshDiagnostics.cpp \
+				srcs/voxel/ChunkMesh.cpp
 
 
 OBJS	= $(SRCS:.cpp=.o)

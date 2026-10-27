@@ -28,7 +28,7 @@ glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
   // ---------------------
   window_ = glfwCreateWindow(width_,
                              height_,
-                             "SCOP",
+                             "ft_vox",
                              NULL,
                              NULL);
 	if (window_ == NULL)
