@@ -33,26 +33,119 @@ std::vector<Vertex>  createTestFace()
   return (vertices);
 }
 
-// void  addFace(std::vector<Vertex>& vetices, int x, int y, int z, int face)
-// {
+void  addFaceNegX(std::vector<Vertex>& vertices, float x, float y, float z, float face)
+{
+  vertices.push_back({x,     y,     z,     0, 0, 0, face});  // A
+  vertices.push_back({x,     y,     z + 1, 1, 0, 0, face});  // B
+  vertices.push_back({x,     y + 1, z + 1, 1, 1, 0, face});  // C
 
-// }
+  vertices.push_back({x,     y + 1, z + 1, 1, 1, 0, face});  // C
+  vertices.push_back({x,     y + 1, z,     0, 1, 0, face});  // D
+  vertices.push_back({x,     y,     z,     0, 0, 0, face});  // A
+}
 
-// // -X +X -Y +Y -Z +Z 各面のテクスチャレイヤー番号
-// std::vector<Vertex> createTestBlock()
-// {
-//   std::vector<Vertex> vertices;
+void  addFacePosX(std::vector<Vertex>& vertices, float x, float y, float z, float face)
+{
+  vertices.push_back({x + 1, y,     z + 1, 0, 0, 0, face});  // A
+  vertices.push_back({x + 1, y,     z,     1, 0, 0, face});  // B
+  vertices.push_back({x + 1, y + 1, z,     1, 1, 0, face});  // C
 
-//   addFace(vertices, 0, 0, 0, 5); // z面
+  vertices.push_back({x + 1, y + 1, z,     1, 1, 0, face});  // C
+  vertices.push_back({x + 1, y + 1, z + 1, 0, 1, 0, face});  // D
+  vertices.push_back({x + 1, y,     z + 1,     0, 0, 0, face});  // A
+}
 
-//   return (vertices);
-// }
+void  addFaceNegY(std::vector<Vertex>& vertices, float x, float y, float z, float face)
+{
+  vertices.push_back({x,     y,     z,     0, 0, 0, face});  // A
+  vertices.push_back({x + 1, y,     z,     1, 0, 0, face});  // B
+  vertices.push_back({x + 1, y,     z + 1, 1, 1, 0, face});  // C
 
-int main()
+  vertices.push_back({x + 1, y,     z + 1, 1, 1, 0, face});  // C
+  vertices.push_back({x,     y,     z + 1, 0, 1, 0, face});  // D
+  vertices.push_back({x,     y,     z,     0, 0, 0, face});  // A
+}
+
+void  addFacePosY(std::vector<Vertex>& vertices, float x, float y, float z, float face)
+{
+  vertices.push_back({x,     y + 1, z + 1, 0, 0, 0, face});  // A
+  vertices.push_back({x + 1, y + 1, z + 1, 1, 0, 0, face});  // B
+  vertices.push_back({x + 1, y + 1, z,     1, 1, 0, face});  // C
+
+  vertices.push_back({x + 1, y + 1, z,     1, 1, 0, face});  // C
+  vertices.push_back({x,     y + 1, z,     0, 1, 0, face});  // D
+  vertices.push_back({x,     y + 1, z + 1,     0, 0, 0, face});  // A
+}
+
+void  addFaceNegZ(std::vector<Vertex>& vertices, float x, float y, float z, float face)
+{
+  vertices.push_back({x + 1, y,     z,     0, 0, 0, face});  // A
+  vertices.push_back({x,     y,     z,     1, 0, 0, face});  // B
+  vertices.push_back({x,     y + 1, z,     1, 1, 0, face});  // C
+
+  vertices.push_back({x,     y + 1, z,     1, 1, 0, face});  // C
+  vertices.push_back({x + 1, y + 1, z,     0, 1, 0, face});  // D
+  vertices.push_back({x + 1, y,     z,     0, 0, 0, face});  // A
+}
+
+void  addFacePosZ(std::vector<Vertex>& vertices, float x, float y, float z, float face)
+{
+  vertices.push_back({x,     y,     z + 1, 0, 0, 0, face});  // A
+  vertices.push_back({x + 1, y,     z + 1, 1, 0, 0, face});  // B
+  vertices.push_back({x + 1, y + 1, z + 1, 1, 1, 0, face});  // C
+
+  vertices.push_back({x + 1, y + 1, z + 1, 1, 1, 0, face});  // C
+  vertices.push_back({x,     y + 1, z + 1, 0, 1, 0, face});  // D
+  vertices.push_back({x,     y,     z + 1, 0, 0, 0, face});  // A
+}
+
+void  addFace(std::vector<Vertex>& vertices, float x, float y, float z, int face)
+{
+  switch(face)
+  {
+    case 0:
+      addFaceNegX(vertices, x, y, z, 0); // -x面
+      break ;
+    case 1:
+      addFacePosX(vertices, x, y, z, 1); // x面
+      break ;
+    case 2:
+      addFaceNegY(vertices, x, y, z, 2); // -y面
+      break ;
+    case 3:
+      addFacePosY(vertices, x, y, z, 3); // y面
+      break ;
+    case 4:
+      addFaceNegZ(vertices, x, y, z, 4); // -z面
+      break ;
+    case 5:
+      addFacePosZ(vertices, x, y, z, 5); // z面
+      break ;
+  }
+}
+
+// -X +X -Y +Y -Z +Z 各面のテクスチャレイヤー番号
+std::vector<Vertex> createTestBlock()
+{
+  std::vector<Vertex> vertices;
+
+  addFace(vertices, 0, 0, 0, 0);
+  addFace(vertices, 0, 0, 0, 1);
+  addFace(vertices, 0, 0, 0, 2);
+  addFace(vertices, 0, 0, 0, 3);
+  addFace(vertices, 0, 0, 0, 4);
+  addFace(vertices, 0, 0, 0, 5);
+
+  return (vertices);
+}
+
+int main(int argc, char **argv)
 {
   std::srand(static_cast<unsigned int>(std::time(NULL)));
   try
-  { 
+  {
+    Utils::checkArgv(argc, argv);
+    BMP       bmp(argv[1]);       // .bmp読み込み
     // window作成とOpenGL初期設定
     Window window;
     glEnable(GL_DEPTH_TEST);                            // 深度テストを有効にする
@@ -61,8 +154,8 @@ int main()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);               // 背景色   
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDisable(GL_CULL_FACE);                            // 裏面処理
-    // glEnable(GL_CULL_FACE);
+    // glDisable(GL_CULL_FACE);                            // 裏面処理
+    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
    
@@ -71,30 +164,51 @@ int main()
     
     // shaderが正常にコンパイルされたらwindow表示する
     window.show();
+
+    Manipulator manipulator(Vec3(0, 0, 0));
     
     // camera作成
     Camera  camera;
 
+    // textureをセット
+    Texture texture(bmp);
+    float   textureScale = 1.0f;
+    float   textureBlend = 0.0f;
+
+    // input flagをインスタンス化
+    Common::InputFlags  inputFlags;
+
     ChunkMesh mesh;
-    mesh.upload(createTestFace());
+    mesh.upload(createTestBlock());
 
     // レンダリングループ 
     while (!window.shouldClose())
     {
+      // キー操作
+      window.processInput(manipulator, textureScale, inputFlags);
+
+      // texture blend 滑らかな切り替わり
+      float target = inputFlags.useTexture ? 1.0f : 0.0f;
+      float step = 0.02f;
+      if (textureBlend < target)
+        textureBlend = std::min(textureBlend + step, target);
+      else
+        textureBlend = std::max(textureBlend - step, target);
+      texture.bind();
 
       // 毎フレーム画面と深度バッファをクリア
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       // GPUに渡す / 使用するshaderprogramを指定し、作った行列をuniformに送る
       shader.use();
-      // shader.setBool("useTexture", inputFlags.useTexture);
-      // shader.setFloat("textureScale", textureScale);
-      // shader.setFloat("textureBlend", textureBlend);
+      shader.setBool("useTexture", inputFlags.useTexture);
+      shader.setFloat("textureScale", textureScale);
+      shader.setFloat("textureBlend", textureBlend);
     
       // CPU側で変換行列を作って渡す modelは作りながら渡すので最後
       Mat4  view = camera.getViewMatrix();
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
-      Mat4  model;
+      Mat4  model = manipulator.getModelMatrix();
       shader.setMatrices(model, view, projection);
       // 描画
       mesh.draw();

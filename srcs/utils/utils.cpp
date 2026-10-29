@@ -22,11 +22,10 @@ void  checkFile(const char* fileName, const char* extension)
 }
 
 void  Utils::checkArgv(int argc, char **argv) {
-  if (argc != 3) {
+  if (argc != 2) {
     std::cerr << "Argument number error" << std::endl;
     std::exit(EXIT_FAILURE);
   }
 
-  checkFile(argv[1], ".obj");
-  checkFile(argv[2], ".bmp");
+  checkFile(argv[1], ".bmp");
 }
