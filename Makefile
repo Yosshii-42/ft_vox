@@ -47,7 +47,9 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/parser/Tokenizer.cpp \
 				srcs/parser/BMP.cpp \
 				srcs/validate/MeshDiagnostics.cpp \
-				srcs/voxel/ChunkMesh.cpp
+				srcs/voxel/ChunkMesh.cpp \
+				srcs/voxel/ChunkData.cpp \
+				srcs/voxel/Block.cpp
 
 
 OBJS	= $(SRCS:.cpp=.o)

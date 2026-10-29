@@ -7,7 +7,7 @@ namespace Common
   constexpr unsigned int DEFAULT_HEIGHT = 600;
 
   // camera settings
-  constexpr float CAMERA_DISTANCE = 3.0f;
+  constexpr float CAMERA_DISTANCE = 40.0f;
   constexpr float CAMERA_FOV = 45.0f;
   constexpr float CAMERA_NEAR = 0.1f;
   constexpr float CAMERA_FAR = 100.0f;

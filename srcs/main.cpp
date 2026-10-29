@@ -17,127 +17,8 @@
 #include "math/Vec3.hpp"
 #include "validate/MeshDiagnostics.hpp"
 #include "voxel/ChunkMesh.hpp"
-
-std::vector<Vertex>  createTestFace()
-{
-  std::vector<Vertex> vertices;
-
-  vertices.push_back({0, 0, 0.5, 0, 0, 0, 5});  // A
-  vertices.push_back({0.5, 0, 0.5, 1, 0, 0, 5});  // B
-  vertices.push_back({0.5, 0.5, 0.5, 1, 1, 0, 5});  // C
-
-  vertices.push_back({0.5, 0.5, 0.5, 1, 1, 0, 5});  // C
-  vertices.push_back({0, 0.5, 0.5, 0, 1, 0, 5});  // D
-  vertices.push_back({0, 0, 0.5, 0, 0, 0, 5});  // A
-
-  return (vertices);
-}
-
-void  addFaceNegX(std::vector<Vertex>& vertices, float x, float y, float z, float face)
-{
-  vertices.push_back({x,     y,     z,     0, 0, 0, face});  // A
-  vertices.push_back({x,     y,     z + 1, 1, 0, 0, face});  // B
-  vertices.push_back({x,     y + 1, z + 1, 1, 1, 0, face});  // C
-
-  vertices.push_back({x,     y + 1, z + 1, 1, 1, 0, face});  // C
-  vertices.push_back({x,     y + 1, z,     0, 1, 0, face});  // D
-  vertices.push_back({x,     y,     z,     0, 0, 0, face});  // A
-}
-
-void  addFacePosX(std::vector<Vertex>& vertices, float x, float y, float z, float face)
-{
-  vertices.push_back({x + 1, y,     z + 1, 0, 0, 0, face});  // A
-  vertices.push_back({x + 1, y,     z,     1, 0, 0, face});  // B
-  vertices.push_back({x + 1, y + 1, z,     1, 1, 0, face});  // C
-
-  vertices.push_back({x + 1, y + 1, z,     1, 1, 0, face});  // C
-  vertices.push_back({x + 1, y + 1, z + 1, 0, 1, 0, face});  // D
-  vertices.push_back({x + 1, y,     z + 1,     0, 0, 0, face});  // A
-}
-
-void  addFaceNegY(std::vector<Vertex>& vertices, float x, float y, float z, float face)
-{
-  vertices.push_back({x,     y,     z,     0, 0, 0, face});  // A
-  vertices.push_back({x + 1, y,     z,     1, 0, 0, face});  // B
-  vertices.push_back({x + 1, y,     z + 1, 1, 1, 0, face});  // C
-
-  vertices.push_back({x + 1, y,     z + 1, 1, 1, 0, face});  // C
-  vertices.push_back({x,     y,     z + 1, 0, 1, 0, face});  // D
-  vertices.push_back({x,     y,     z,     0, 0, 0, face});  // A
-}
-
-void  addFacePosY(std::vector<Vertex>& vertices, float x, float y, float z, float face)
-{
-  vertices.push_back({x,     y + 1, z + 1, 0, 0, 0, face});  // A
-  vertices.push_back({x + 1, y + 1, z + 1, 1, 0, 0, face});  // B
-  vertices.push_back({x + 1, y + 1, z,     1, 1, 0, face});  // C
-
-  vertices.push_back({x + 1, y + 1, z,     1, 1, 0, face});  // C
-  vertices.push_back({x,     y + 1, z,     0, 1, 0, face});  // D
-  vertices.push_back({x,     y + 1, z + 1,     0, 0, 0, face});  // A
-}
-
-void  addFaceNegZ(std::vector<Vertex>& vertices, float x, float y, float z, float face)
-{
-  vertices.push_back({x + 1, y,     z,     0, 0, 0, face});  // A
-  vertices.push_back({x,     y,     z,     1, 0, 0, face});  // B
-  vertices.push_back({x,     y + 1, z,     1, 1, 0, face});  // C
-
-  vertices.push_back({x,     y + 1, z,     1, 1, 0, face});  // C
-  vertices.push_back({x + 1, y + 1, z,     0, 1, 0, face});  // D
-  vertices.push_back({x + 1, y,     z,     0, 0, 0, face});  // A
-}
-
-void  addFacePosZ(std::vector<Vertex>& vertices, float x, float y, float z, float face)
-{
-  vertices.push_back({x,     y,     z + 1, 0, 0, 0, face});  // A
-  vertices.push_back({x + 1, y,     z + 1, 1, 0, 0, face});  // B
-  vertices.push_back({x + 1, y + 1, z + 1, 1, 1, 0, face});  // C
-
-  vertices.push_back({x + 1, y + 1, z + 1, 1, 1, 0, face});  // C
-  vertices.push_back({x,     y + 1, z + 1, 0, 1, 0, face});  // D
-  vertices.push_back({x,     y,     z + 1, 0, 0, 0, face});  // A
-}
-
-void  addFace(std::vector<Vertex>& vertices, float x, float y, float z, int face)
-{
-  switch(face)
-  {
-    case 0:
-      addFaceNegX(vertices, x, y, z, 0); // -x面
-      break ;
-    case 1:
-      addFacePosX(vertices, x, y, z, 1); // x面
-      break ;
-    case 2:
-      addFaceNegY(vertices, x, y, z, 2); // -y面
-      break ;
-    case 3:
-      addFacePosY(vertices, x, y, z, 3); // y面
-      break ;
-    case 4:
-      addFaceNegZ(vertices, x, y, z, 4); // -z面
-      break ;
-    case 5:
-      addFacePosZ(vertices, x, y, z, 5); // z面
-      break ;
-  }
-}
-
-// -X +X -Y +Y -Z +Z 各面のテクスチャレイヤー番号
-std::vector<Vertex> createTestBlock()
-{
-  std::vector<Vertex> vertices;
-
-  addFace(vertices, 0, 0, 0, 0);
-  addFace(vertices, 0, 0, 0, 1);
-  addFace(vertices, 0, 0, 0, 2);
-  addFace(vertices, 0, 0, 0, 3);
-  addFace(vertices, 0, 0, 0, 4);
-  addFace(vertices, 0, 0, 0, 5);
-
-  return (vertices);
-}
+#include "voxel/ChunkData.hpp"
+#include "voxel/VoxCommon.hpp"
 
 int main(int argc, char **argv)
 {
@@ -152,10 +33,10 @@ int main(int argc, char **argv)
     glEnable(GL_BLEND);                                 // ブレンディングを有効にする
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // どうブレンドするかを指定する
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);               // 背景色   
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    // glDisable(GL_CULL_FACE);                            // 裏面処理
-    glEnable(GL_CULL_FACE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDisable(GL_CULL_FACE);                            // 裏面処理
+    // glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
    
@@ -178,15 +59,26 @@ int main(int argc, char **argv)
     // input flagをインスタンス化
     Common::InputFlags  inputFlags;
 
+    ChunkData chunk;
+    
+    for (int y = 0; y < 16; ++y)
+    {
+      for (int z = 0; z < 16; ++z)
+      {
+        for (int x = 0; x < 16; ++x)
+          chunk.setBlock(x, y, z, BLOCK_DIRT);
+      }
+    }
+    
     ChunkMesh mesh;
-    mesh.upload(createTestBlock());
+    mesh.build(chunk);
+    mesh.upload();
 
     // レンダリングループ 
     while (!window.shouldClose())
     {
       // キー操作
       window.processInput(manipulator, textureScale, inputFlags);
-
       // texture blend 滑らかな切り替わり
       float target = inputFlags.useTexture ? 1.0f : 0.0f;
       float step = 0.02f;
