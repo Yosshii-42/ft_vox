@@ -1,4 +1,7 @@
+// ブロックの面を頂点データに変換する
 #pragma once
+
+#include "voxel/ChunkData.hpp"
 
 #include<iostream>
 #include<vector>
@@ -15,6 +18,14 @@ private:
   unsigned int  VAO_ = 0;
   unsigned int  VBO_ = 0;
   size_t        vertexCount_ = 0;
+  std::vector<Vertex> vertices_;
+
+  void  addFaceNegX(float x, float y, float z); // -x面
+  void  addFacePosX(float x, float y, float z); // x面
+  void  addFaceNegY(float x, float y, float z); // -y面
+  void  addFacePosY(float x, float y, float z); // y面
+  void  addFaceNegZ(float x, float y, float z); // -z面
+  void  addFacePosZ(float x, float y, float z); // z面
 
 public:
   ChunkMesh() = default;
@@ -23,6 +34,9 @@ public:
   ChunkMesh(const ChunkMesh&) = delete;
   ChunkMesh& operator=(const ChunkMesh&) = delete;
 
-  void  upload(const std::vector<Vertex>& vertices);
+  void  addFace(float x, float y, float z, int face);
+  void  build(const ChunkData& chunk);
+
+  void  upload();
   void  draw() const;
 };
