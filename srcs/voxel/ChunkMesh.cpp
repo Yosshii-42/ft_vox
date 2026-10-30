@@ -11,19 +11,20 @@ ChunkMesh::~ChunkMesh() {
   glDeleteVertexArrays(1, &VAO_);
 }
 
-void  ChunkMesh::addFace(float x, float y, float z, int face)
+void  ChunkMesh::addFace(float x, float y, float z, int face, float layer)
 {
   switch(face)
   {
-    case 0: addFaceNegX(x, y, z); break;
-    case 1: addFacePosX(x, y, z); break;
-    case 2: addFaceNegY(x, y, z); break;
-    case 3: addFacePosY(x, y, z); break;
-    case 4: addFaceNegZ(x, y, z); break;
-    case 5: addFacePosZ(x, y, z); break;
+    case 0: addFaceNegX(x, y, z, layer); break;
+    case 1: addFacePosX(x, y, z, layer); break;
+    case 2: addFaceNegY(x, y, z, layer); break;
+    case 3: addFacePosY(x, y, z, layer); break;
+    case 4: addFaceNegZ(x, y, z, layer); break;
+    case 5: addFacePosZ(x, y, z, layer); break;
   }
 }
 
+// 隣接面を判定し、必要な面の頂点を生成
 void  ChunkMesh::build(const ChunkData& chunk)
 {
   const int dx[6] = {-1, 1, 0, 0, 0, 0};
@@ -32,21 +33,24 @@ void  ChunkMesh::build(const ChunkData& chunk)
 
   vertices_.clear();
 
-  for (int y = 0; y < 16; ++y)
+  for (int y = 0; y < VOXEL_CHUNK_SIZE; ++y)
   {
-    for (int z = 0; z < 16; ++z)
+    for (int z = 0; z < VOXEL_CHUNK_SIZE; ++z)
     {
-      for (int x = 0; x < 16; ++x)
+      for (int x = 0; x < VOXEL_CHUNK_SIZE; ++x)
       {
-        if (chunk.getBlockID(x , y ,z) == BLOCK_AIR)
+        BlockID id = chunk.getBlockID(x ,y, z);
+        if (id == BLOCK_AIR)
           continue;
         
+        float layer = getTextureLayer(id);
         for (int face = 0; face < 6; ++face)
         {
+          // チャンク内の隣接ブロックがAIRだったら、面を作成する
           if (chunk.getBlockID(x + dx[face],
                                y + dy[face],
                                z + dz[face]) == BLOCK_AIR)
-            addFace(x, y, z, face);
+            addFace(x, y, z, face, layer);
         }
       }
     }
@@ -106,69 +110,84 @@ void  ChunkMesh::draw() const
   glBindVertexArray(0);
 }
 
-void  ChunkMesh::addFaceNegX(float x, float y, float z)
+void  ChunkMesh::addFaceNegX(float x, float y, float z, float layer)
 {
-  vertices_.push_back({x,     y,     z,     0, 0, 0, 0});  // A
-  vertices_.push_back({x,     y,     z + 1, 1, 0, 0, 0});  // B
-  vertices_.push_back({x,     y + 1, z + 1, 1, 1, 0, 0});  // C
+  vertices_.push_back({x,     y,     z,     0, 0, layer, 0});  // A
+  vertices_.push_back({x,     y,     z + 1, 1, 0, layer, 0});  // B
+  vertices_.push_back({x,     y + 1, z + 1, 1, 1, layer, 0});  // C
 
-  vertices_.push_back({x,     y + 1, z + 1, 1, 1, 0, 0});  // C
-  vertices_.push_back({x,     y + 1, z,     0, 1, 0, 0});  // D
-  vertices_.push_back({x,     y,     z,     0, 0, 0, 0});  // A
+  vertices_.push_back({x,     y + 1, z + 1, 1, 1, layer, 0});  // C
+  vertices_.push_back({x,     y + 1, z,     0, 1, layer, 0});  // D
+  vertices_.push_back({x,     y,     z,     0, 0, layer, 0});  // A
 }
 
-void  ChunkMesh::addFacePosX(float x, float y, float z)
+void  ChunkMesh::addFacePosX(float x, float y, float z, float layer)
 {
-  vertices_.push_back({x + 1, y,     z + 1, 0, 0, 0, 1});
-  vertices_.push_back({x + 1, y,     z,     1, 0, 0, 1});
-  vertices_.push_back({x + 1, y + 1, z,     1, 1, 0, 1});
+  vertices_.push_back({x + 1, y,     z + 1, 0, 0, layer, 1});
+  vertices_.push_back({x + 1, y,     z,     1, 0, layer, 1});
+  vertices_.push_back({x + 1, y + 1, z,     1, 1, layer, 1});
 
-  vertices_.push_back({x + 1, y + 1, z,     1, 1, 0, 1});
-  vertices_.push_back({x + 1, y + 1, z + 1, 0, 1, 0, 1});
-  vertices_.push_back({x + 1, y,     z + 1, 0, 0, 0, 1});
+  vertices_.push_back({x + 1, y + 1, z,     1, 1, layer, 1});
+  vertices_.push_back({x + 1, y + 1, z + 1, 0, 1, layer, 1});
+  vertices_.push_back({x + 1, y,     z + 1, 0, 0, layer, 1});
 }
 
-void  ChunkMesh::addFaceNegY(float x, float y, float z)
+void  ChunkMesh::addFaceNegY(float x, float y, float z, float layer)
 {
-  vertices_.push_back({x,     y,     z,     0, 0, 0, 2});
-  vertices_.push_back({x + 1, y,     z,     1, 0, 0, 2});
-  vertices_.push_back({x + 1, y,     z + 1, 1, 1, 0, 2});
+  vertices_.push_back({x,     y,     z,     0, 0, layer, 2});
+  vertices_.push_back({x + 1, y,     z,     1, 0, layer, 2});
+  vertices_.push_back({x + 1, y,     z + 1, 1, 1, layer, 2});
 
-  vertices_.push_back({x + 1, y,     z + 1, 1, 1, 0, 2});
-  vertices_.push_back({x,     y,     z + 1, 0, 1, 0, 2});
-  vertices_.push_back({x,     y,     z,     0, 0, 0, 2});
+  vertices_.push_back({x + 1, y,     z + 1, 1, 1, layer, 2});
+  vertices_.push_back({x,     y,     z + 1, 0, 1, layer, 2});
+  vertices_.push_back({x,     y,     z,     0, 0, layer, 2});
 }
 
-void  ChunkMesh::addFacePosY(float x, float y, float z)
+void  ChunkMesh::addFacePosY(float x, float y, float z, float layer)
 {
-  vertices_.push_back({x,     y + 1, z + 1, 0, 0, 0, 3});
-  vertices_.push_back({x + 1, y + 1, z + 1, 1, 0, 0, 3});
-  vertices_.push_back({x + 1, y + 1, z,     1, 1, 0, 3});
+  vertices_.push_back({x,     y + 1, z + 1, 0, 0, layer, 3});
+  vertices_.push_back({x + 1, y + 1, z + 1, 1, 0, layer, 3});
+  vertices_.push_back({x + 1, y + 1, z,     1, 1, layer, 3});
 
-  vertices_.push_back({x + 1, y + 1, z,     1, 1, 0, 3});
-  vertices_.push_back({x,     y + 1, z,     0, 1, 0, 3});
-  vertices_.push_back({x,     y + 1, z + 1, 0, 0, 0, 3});
+  vertices_.push_back({x + 1, y + 1, z,     1, 1, layer, 3});
+  vertices_.push_back({x,     y + 1, z,     0, 1, layer, 3});
+  vertices_.push_back({x,     y + 1, z + 1, 0, 0, layer, 3});
 }
 
-void  ChunkMesh::addFaceNegZ(float x, float y, float z)
+void  ChunkMesh::addFaceNegZ(float x, float y, float z, float layer)
 {
-  vertices_.push_back({x + 1, y,     z,     0, 0, 0, 4});
-  vertices_.push_back({x,     y,     z,     1, 0, 0, 4});
-  vertices_.push_back({x,     y + 1, z,     1, 1, 0, 4});
+  vertices_.push_back({x + 1, y,     z,     0, 0, layer, 4});
+  vertices_.push_back({x,     y,     z,     1, 0, layer, 4});
+  vertices_.push_back({x,     y + 1, z,     1, 1, layer, 4});
 
-  vertices_.push_back({x,     y + 1, z,     1, 1, 0, 4});
-  vertices_.push_back({x + 1, y + 1, z,     0, 1, 0, 4});
-  vertices_.push_back({x + 1, y,     z,     0, 0, 0, 4});
+  vertices_.push_back({x,     y + 1, z,     1, 1, layer, 4});
+  vertices_.push_back({x + 1, y + 1, z,     0, 1, layer, 4});
+  vertices_.push_back({x + 1, y,     z,     0, 0, layer, 4});
 }
 
-void  ChunkMesh::addFacePosZ(float x, float y, float z)
+void  ChunkMesh::addFacePosZ(float x, float y, float z, float layer)
 {
-  vertices_.push_back({x,     y,     z + 1, 0, 0, 0, 5});
-  vertices_.push_back({x + 1, y,     z + 1, 1, 0, 0, 5});
-  vertices_.push_back({x + 1, y + 1, z + 1, 1, 1, 0, 5});
+  vertices_.push_back({x,     y,     z + 1, 0, 0, layer, 5});
+  vertices_.push_back({x + 1, y,     z + 1, 1, 0, layer, 5});
+  vertices_.push_back({x + 1, y + 1, z + 1, 1, 1, layer, 5});
 
-  vertices_.push_back({x + 1, y + 1, z + 1, 1, 1, 0, 5});
-  vertices_.push_back({x,     y + 1, z + 1, 0, 1, 0, 5});
-  vertices_.push_back({x,     y,     z + 1, 0, 0, 0, 5});
+  vertices_.push_back({x + 1, y + 1, z + 1, 1, 1, layer, 5});
+  vertices_.push_back({x,     y + 1, z + 1, 0, 1, layer, 5});
+  vertices_.push_back({x,     y,     z + 1, 0, 0, layer, 5});
 }
 
+float ChunkMesh::getTextureLayer(BlockID id)
+{
+  switch (id)
+  {
+    case BLOCK_DIRT:    return 0.0f;
+    case BLOCK_STONE:   return 1.0f;
+    case BLOCK_BEDROCK: return 2.0f;
+    case BLOCK_SAND:    return 3.0f;
+    case BLOCK_SNOW:    return 4.0f;
+    case BLOCK_WATER:   return 5.0f;
+    case BLOCK_MAGMA:   return 6.0f;
+    case BLOCK_CRISTAL: return 7.0f;
+    default:            return 0.0f;
+  }
+}

@@ -49,7 +49,8 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/validate/MeshDiagnostics.cpp \
 				srcs/voxel/ChunkMesh.cpp \
 				srcs/voxel/ChunkData.cpp \
-				srcs/voxel/Block.cpp
+				srcs/voxel/Block.cpp \
+				srcs/world/TerrainGenerator.cpp
 
 
 OBJS	= $(SRCS:.cpp=.o)

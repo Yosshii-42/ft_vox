@@ -222,6 +222,7 @@ The object can be manipulated using the following keyboard controls:
 - [Checking Whether a Point Lies on a Triangle's Vertices](http://www.sousakuba.com/Programming/gs_hittest_point_triangle.html)
 - [Normal vector of a polygon](https://web.ist.utl.pt/~antonio.menezes.leitao/Docs/Books/BookJulia/Parametric_Representation/Surface_Normals/index.html)
 - [mktemp, trap usage](https://www.linuxmaster.jp/linux_skill/2026/05/mktemp.html)
+- [std::array<>](https://cpprefjp.github.io/reference/array/array.html)
 
 ## AI Usage
 

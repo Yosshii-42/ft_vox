@@ -19,6 +19,7 @@
 #include "voxel/ChunkMesh.hpp"
 #include "voxel/ChunkData.hpp"
 #include "voxel/VoxCommon.hpp"
+#include "world/TerrainGenerator.hpp"
 
 int main(int argc, char **argv)
 {
@@ -33,8 +34,8 @@ int main(int argc, char **argv)
     glEnable(GL_BLEND);                                 // ブレンディングを有効にする
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // どうブレンドするかを指定する
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);               // 背景色   
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDisable(GL_CULL_FACE);                            // 裏面処理
     // glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -60,15 +61,8 @@ int main(int argc, char **argv)
     Common::InputFlags  inputFlags;
 
     ChunkData chunk;
-    
-    for (int y = 0; y < 16; ++y)
-    {
-      for (int z = 0; z < 16; ++z)
-      {
-        for (int x = 0; x < 16; ++x)
-          chunk.setBlock(x, y, z, BLOCK_DIRT);
-      }
-    }
+    TerrainGenerator  generator(12345);
+    generator.generateChunk(0, 0, 0, chunk);
     
     ChunkMesh mesh;
     mesh.build(chunk);

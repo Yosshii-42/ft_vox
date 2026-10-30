@@ -2,6 +2,7 @@
 #pragma once
 
 #include "voxel/ChunkData.hpp"
+#include "voxel/VoxCommon.hpp"
 
 #include<iostream>
 #include<vector>
@@ -20,12 +21,12 @@ private:
   size_t        vertexCount_ = 0;
   std::vector<Vertex> vertices_;
 
-  void  addFaceNegX(float x, float y, float z); // -x面
-  void  addFacePosX(float x, float y, float z); // x面
-  void  addFaceNegY(float x, float y, float z); // -y面
-  void  addFacePosY(float x, float y, float z); // y面
-  void  addFaceNegZ(float x, float y, float z); // -z面
-  void  addFacePosZ(float x, float y, float z); // z面
+  void  addFaceNegX(float x, float y, float z, float layer); // -x面
+  void  addFacePosX(float x, float y, float z, float layer); // x面
+  void  addFaceNegY(float x, float y, float z, float layer); // -y面
+  void  addFacePosY(float x, float y, float z, float layer); // y面
+  void  addFaceNegZ(float x, float y, float z, float layer); // -z面
+  void  addFacePosZ(float x, float y, float z, float layer); // z面
 
 public:
   ChunkMesh() = default;
@@ -34,7 +35,8 @@ public:
   ChunkMesh(const ChunkMesh&) = delete;
   ChunkMesh& operator=(const ChunkMesh&) = delete;
 
-  void  addFace(float x, float y, float z, int face);
+  void  addFace(float x, float y, float z, int face, float layer);
+  float getTextureLayer(BlockID id);
   void  build(const ChunkData& chunk);
 
   void  upload();

@@ -1,4 +1,4 @@
-// ブロックの配置情報
+// ブロックの配置情報 4096個のBlockIDを保存
 #pragma once
 
 // #include "voxel/Block.hpp"
