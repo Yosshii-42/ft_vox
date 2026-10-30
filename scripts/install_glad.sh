@@ -6,9 +6,9 @@ GLAD_VERSION="0.1.36"
 
 if [ -f "$GLAD_DIR/include/glad/glad.h" ] &&
    [ -f "$GLAD_DIR/include/KHR/khrplatform.h" ] &&
-   [ -f "$GLAD_DIR/src/glad.c"]; then
+   [ -f "$GLAD_DIR/src/glad.c" ]; then
    echo "GLAD is already installed."
-   EXIT 0
+   exit 0
 fi
 
 # GLAD生成ツールをtmp directoryにインストール

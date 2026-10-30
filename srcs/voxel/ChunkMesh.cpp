@@ -178,6 +178,8 @@ void  ChunkMesh::addFacePosZ(float x, float y, float z, float layer)
 
 float ChunkMesh::getTextureLayer(BlockID id)
 {
+  (void)id;
+  return (0.0f);
   switch (id)
   {
     case BLOCK_DIRT:    return 0.0f;

@@ -4,16 +4,12 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "utils/utils.hpp"
-#include "parser/Tokenizer.hpp"
-#include "parser/BMP.hpp"
 #include "gl/Shader.hpp"
 #include "gl/Window.hpp"
 #include "gl/Object.hpp"
-#include "gl/Texture.hpp"
+#include "gl/TextureArray.hpp"
 #include "gl/Manipulator.hpp"
 #include "gl/Camera.hpp"
-#include "gl/Instance.hpp"
 #include "math/Vec3.hpp"
 #include "validate/MeshDiagnostics.hpp"
 #include "voxel/ChunkMesh.hpp"
@@ -21,13 +17,11 @@
 #include "voxel/VoxCommon.hpp"
 #include "world/TerrainGenerator.hpp"
 
-int main(int argc, char **argv)
+int main()
 {
   std::srand(static_cast<unsigned int>(std::time(NULL)));
   try
   {
-    Utils::checkArgv(argc, argv);
-    BMP       bmp(argv[1]);       // .bmp読み込み
     // window作成とOpenGL初期設定
     Window window;
     glEnable(GL_DEPTH_TEST);                            // 深度テストを有効にする
@@ -53,9 +47,10 @@ int main(int argc, char **argv)
     Camera  camera;
 
     // textureをセット
-    Texture texture(bmp);
     float   textureScale = 1.0f;
-    float   textureBlend = 0.0f;
+
+    TextureArray  tex;
+    tex.load({"textures/dirt.png"});
 
     // input flagをインスタンス化
     Common::InputFlags  inputFlags;
@@ -73,23 +68,17 @@ int main(int argc, char **argv)
     {
       // キー操作
       window.processInput(manipulator, textureScale, inputFlags);
-      // texture blend 滑らかな切り替わり
-      float target = inputFlags.useTexture ? 1.0f : 0.0f;
-      float step = 0.02f;
-      if (textureBlend < target)
-        textureBlend = std::min(textureBlend + step, target);
-      else
-        textureBlend = std::max(textureBlend - step, target);
-      texture.bind();
-
+      
       // 毎フレーム画面と深度バッファをクリア
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+      
       // GPUに渡す / 使用するshaderprogramを指定し、作った行列をuniformに送る
       shader.use();
+      glActiveTexture(GL_TEXTURE0);
+      tex.bind();
+      shader.setInt("ourTexture", 0);
       shader.setBool("useTexture", inputFlags.useTexture);
       shader.setFloat("textureScale", textureScale);
-      shader.setFloat("textureBlend", textureBlend);
     
       // CPU側で変換行列を作って渡す modelは作りながら渡すので最後
       Mat4  view = camera.getViewMatrix();

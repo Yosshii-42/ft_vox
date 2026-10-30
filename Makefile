@@ -5,7 +5,12 @@ NAME	= ft_vox
 CXX		= c++
 CC		= cc
 
-GLAD_DIR 	 = includes/glad
+GLAD_DIR 	= includes/glad
+STB_DIR		= includes/stb 
+SCRS_DIR	= scripts
+
+GLAD_FILE	= $(GLAD_DIR)/src/glad.c
+STB_FILE	= $(STB_DIR)/stb_image.h
 
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++17 \
 			  		-I./includes \
@@ -32,25 +37,22 @@ endif
 
 SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/main.cpp \
-				srcs/utils/utils.cpp \
 				srcs/gl/Window.cpp \
 				srcs/gl/Shader.cpp \
 				srcs/gl/Object.cpp \
-				srcs/gl/Texture.cpp \
+				srcs/gl/TextureArray.cpp \
 				srcs/gl/Manipulator.cpp \
 				srcs/gl/Camera.cpp \
-				srcs/gl/Instance.cpp \
 				srcs/math/Mat4.cpp \
 				srcs/math/Vec2.cpp \
 				srcs/math/Vec3.cpp \
 				srcs/math/Vec4.cpp \
-				srcs/parser/Tokenizer.cpp \
-				srcs/parser/BMP.cpp \
 				srcs/validate/MeshDiagnostics.cpp \
 				srcs/voxel/ChunkMesh.cpp \
 				srcs/voxel/ChunkData.cpp \
 				srcs/voxel/Block.cpp \
-				srcs/world/TerrainGenerator.cpp
+				srcs/world/TerrainGenerator.cpp \
+				srcs/gl/StbImage.cpp
 
 
 OBJS	= $(SRCS:.cpp=.o)
@@ -64,10 +66,15 @@ all: $(NAME)
 $(GLAD_DIR)/src/%.o: $(GLAD_DIR)/src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(GLAD_DIR)/src/glad.c: install_glad.sh
-	./install_glad.sh
+$(GLAD_FILE): $(SCRS_DIR)/install_glad.sh
+	./$(SCRS_DIR)/install_glad.sh
 
-$(OBJS): | $(GLAD_DIR)/src/glad.c
+$(STB_FILE): $(SCRS_DIR)/install_stb.sh
+	./$(SCRS_DIR)/install_stb.sh
+
+$(OBJS): | $(GLAD_FILE) $(STB_FILE)
+
+srcs/gl/StbImage.o: $(STB_FILE)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
