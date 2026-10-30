@@ -201,11 +201,7 @@ The object can be manipulated using the following keyboard controls:
 | `R` / `F` | Move along the Y-axis |
 | `W` / `S` | Move along the Z-axis |
 | `Z` / `X` | Scale the object up / down |
-| `T` | Toggle texture on / off |
 | `C` / `V` | Increase / decrease texture repetition |
-| `M` | Switch between axis-based and normal-based UV mapping |
-| `P` | Add a new object instance |
-| `K` | Remove all added instances, keeping the first instance |
 | `SPACE` | Rotate each instance around its own randomly assigned axis |
 | `ESC` | Close the window |
 
@@ -216,13 +212,11 @@ The object can be manipulated using the following keyboard controls:
 - [OpenGL Reference](https://registry.khronos.org/OpenGL/specs/gl/glspec33.core.pdf)
 - [GLAD](https://glad.dav1d.de)
 - [std::isfinite](https://cpprefjp.github.io/reference/cmath/isfinite.html)
-- [BMP file format](https://www.setsuki.com/hsp/ext/bmp.htm)
 - [Area of Polygon](https://gihyo.jp/dev/serial/01/geometry/0008)
-- [Ear Clipping Triangulation](https://qiita.com/fujii-kotaro/items/a411f2a45627ed2f156e)
-- [Checking Whether a Point Lies on a Triangle's Vertices](http://www.sousakuba.com/Programming/gs_hittest_point_triangle.html)
 - [Normal vector of a polygon](https://web.ist.utl.pt/~antonio.menezes.leitao/Docs/Books/BookJulia/Parametric_Representation/Surface_Normals/index.html)
 - [mktemp, trap usage](https://www.linuxmaster.jp/linux_skill/2026/05/mktemp.html)
 - [std::array<>](https://cpprefjp.github.io/reference/array/array.html)
+- [Texture sample](https://minecraftjapan.miraheze.org/wiki/)
 
 ## AI Usage
 

@@ -45,7 +45,10 @@ int main()
     Camera  camera;
 
     TextureArray  tex;
-    tex.load({"textures/dirt.png"});
+    tex.load({
+      "textures/dirt.png",
+      "textures/stone.png",
+      "textures/bedrock.png"});
     
     ChunkData chunk;
     TerrainGenerator  generator(12345);
