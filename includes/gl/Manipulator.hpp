@@ -2,7 +2,6 @@
 
 #include "math/Mat4.hpp"
 #include "math/Vec3.hpp"
-#include "gl/Instance.hpp"
 
 class Manipulator {
 private:
@@ -30,5 +29,4 @@ public:
   void  scale(float scale);
 
   Mat4  getModelMatrix() const;
-  Mat4  getModelMatrix(const Instance& instance) const;
 };

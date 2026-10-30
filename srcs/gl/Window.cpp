@@ -1,5 +1,4 @@
 #include "gl/Window.hpp"
-#include "gl/Instance.hpp"
 #include "Common.hpp"
 
 Window::Window()

@@ -39,7 +39,6 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/main.cpp \
 				srcs/gl/Window.cpp \
 				srcs/gl/Shader.cpp \
-				srcs/gl/Object.cpp \
 				srcs/gl/TextureArray.cpp \
 				srcs/gl/Manipulator.cpp \
 				srcs/gl/Camera.cpp \
@@ -47,7 +46,6 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/math/Vec2.cpp \
 				srcs/math/Vec3.cpp \
 				srcs/math/Vec4.cpp \
-				srcs/validate/MeshDiagnostics.cpp \
 				srcs/voxel/ChunkMesh.cpp \
 				srcs/voxel/ChunkData.cpp \
 				srcs/voxel/Block.cpp \

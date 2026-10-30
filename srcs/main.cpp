@@ -6,12 +6,10 @@
 
 #include "gl/Shader.hpp"
 #include "gl/Window.hpp"
-#include "gl/Object.hpp"
 #include "gl/TextureArray.hpp"
 #include "gl/Manipulator.hpp"
 #include "gl/Camera.hpp"
 #include "math/Vec3.hpp"
-#include "validate/MeshDiagnostics.hpp"
 #include "voxel/ChunkMesh.hpp"
 #include "voxel/ChunkData.hpp"
 #include "voxel/VoxCommon.hpp"

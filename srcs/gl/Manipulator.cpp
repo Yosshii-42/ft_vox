@@ -75,27 +75,3 @@ Mat4  Manipulator::getModelMatrix() const
 
   return (model);
 }
-
-Mat4  Manipulator::getModelMatrix(const Instance& instance) const
-{
-  Mat4  model;
- 
-  // 平行移動
-  model *= Mat4::translate(position_.x, position_.y, position_.z);
-  model *= Mat4::translate(instance.position.x,
-                           instance.position.y,
-                           instance.position.z);
-
-  // 回転
-  model *= rotation_;
-  model *= Mat4::rotate(randomRotationAngle_, instance.rotationAxis);
-
-  // 拡大縮小
-  model *= Mat4::scale(scale_.x, scale_.y, scale_.z);
-  model *= Mat4::scale(instance.scale, instance.scale, instance.scale);
-
-  // 中心補正
-  model *= Mat4::translate(-center_.x, -center_.y, -center_.z);
-
-  return (model);
-}
