@@ -37,7 +37,7 @@ public:
 
   void  addFace(float x, float y, float z, int face, float layer);
   float getTextureLayer(BlockID id);
-  void  build(const ChunkData& chunk);
+  void  build(const ChunkData& chunk, const ChunkData* negX, const ChunkData* posX);
 
   void  upload();
   void  draw() const;

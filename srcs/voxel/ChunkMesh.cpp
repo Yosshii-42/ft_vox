@@ -25,7 +25,7 @@ void  ChunkMesh::addFace(float x, float y, float z, int face, float layer)
 }
 
 // 隣接面を判定し、必要な面の頂点を生成
-void  ChunkMesh::build(const ChunkData& chunk)
+void  ChunkMesh::build(const ChunkData& chunk, const ChunkData* negX, const ChunkData* posX)
 {
   const int dx[6] = {-1, 1, 0, 0, 0, 0};
   const int dy[6] = {0, 0, -1, 1, 0, 0};
@@ -47,9 +47,20 @@ void  ChunkMesh::build(const ChunkData& chunk)
         for (int face = 0; face < 6; ++face)
         {
           // チャンク内の隣接ブロックがAIRだったら、面を作成する
-          if (chunk.getBlockID(x + dx[face],
-                               y + dy[face],
-                               z + dz[face]) == BLOCK_AIR)
+          int nx = x + dx[face];
+          int ny = y + dy[face];
+          int nz = z + dz[face];
+
+          BlockID neighbor;
+
+          if (nx < 0 && negX != nullptr)
+            neighbor = negX->getBlockID(VOXEL_CHUNK_SIZE - 1, ny, nz);
+          else if (nx >= VOXEL_CHUNK_SIZE && posX != nullptr)
+            neighbor = posX->getBlockID(0, ny, nz);
+          else
+            neighbor = chunk.getBlockID(nx, ny, nz);
+          
+          if (neighbor == BLOCK_AIR)
             addFace(x, y, z, face, layer);
         }
       }

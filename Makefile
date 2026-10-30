@@ -42,6 +42,7 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/gl/TextureArray.cpp \
 				srcs/gl/Manipulator.cpp \
 				srcs/gl/Camera.cpp \
+				srcs/gl/StbImage.cpp \
 				srcs/math/Mat4.cpp \
 				srcs/math/Vec2.cpp \
 				srcs/math/Vec3.cpp \
@@ -49,8 +50,9 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/voxel/ChunkMesh.cpp \
 				srcs/voxel/ChunkData.cpp \
 				srcs/voxel/Block.cpp \
+				srcs/voxel/VoxCommon.cpp \
 				srcs/world/TerrainGenerator.cpp \
-				srcs/gl/StbImage.cpp
+				srcs/world/DrawWorld.cpp
 
 
 OBJS	= $(SRCS:.cpp=.o)

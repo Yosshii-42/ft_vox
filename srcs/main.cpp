@@ -14,6 +14,7 @@
 #include "voxel/ChunkData.hpp"
 #include "voxel/VoxCommon.hpp"
 #include "world/TerrainGenerator.hpp"
+#include "world/DrawWorld.hpp"
 
 int main()
 {
@@ -26,8 +27,8 @@ int main()
     glEnable(GL_BLEND);                                 // ブレンディングを有効にする
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // どうブレンドするかを指定する
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);               // 背景色   
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDisable(GL_CULL_FACE);                            // 裏面処理
     // glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -50,13 +51,56 @@ int main()
       "textures/stone.png",
       "textures/bedrock.png"});
     
-    ChunkData chunk;
+    ChunkData chunk0;
+    ChunkData chunk1;
+    ChunkData chunk2;
+    ChunkData chunk3;
+
     TerrainGenerator  generator(12345);
-    generator.generateChunk(0, 0, 0, chunk);
     
-    ChunkMesh mesh;
-    mesh.build(chunk);
-    mesh.upload();
+
+    generator.generateChunk(0, 0, 0, chunk0);
+    generator.generateChunk(1, 0, 0, chunk1);
+    generator.generateChunk(0, 0, 1, chunk2);
+    generator.generateChunk(1, 0, 1, chunk3);
+
+    
+    DrawWorld world;
+    world.addChunk({0, 0, 0}, chunk0);
+    world.addChunk({1, 0, 0}, chunk1);
+    world.addChunk({0, 0, 1}, chunk2);
+    world.addChunk({1, 0, 1}, chunk3);
+    
+    std::cout << "Expected: "
+    << static_cast<int>(chunk1.getBlockID(2, 5, 3))
+    << '\n';
+    
+    std::cout << "Actual: "
+    << static_cast<int>(world.getBlock(18, 5, 3))
+    << '\n';
+    
+    ChunkMesh mesh0;
+    ChunkMesh mesh1;
+    ChunkMesh mesh2;
+    ChunkMesh mesh3;
+
+    const ChunkData*  c0 = world.getChunk({0, 0, 0});
+    const ChunkData*  c1 = world.getChunk({1, 0, 0});
+    const ChunkData*  c2 = world.getChunk({0, 0, 1});
+    const ChunkData*  c3 = world.getChunk({1, 0, 1});
+
+    if (c0 == nullptr || c1 == nullptr || c2 == nullptr || c3 == nullptr)
+      throw std::runtime_error("Chunk not found");
+
+    mesh0.build(*c0, nullptr, c1);
+    mesh1.build(*c1, c0, nullptr);
+    mesh2.build(*c2, nullptr, c3);
+    mesh3.build(*c3, c2, nullptr);
+
+    mesh0.upload();
+    mesh1.upload();
+    mesh2.upload();
+    mesh3.upload();
     
     // input flagをインスタンス化
     Common::InputFlags  inputFlags;
@@ -83,12 +127,25 @@ int main()
       // 行列
       Mat4  view = camera.getViewMatrix();
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
-      Mat4  model = manipulator.getModelMatrix();
-      shader.setMatrices(model, view, projection);
-    
-      // 描画
-      mesh.draw();
+      
+      Mat4  baseModel = manipulator.getModelMatrix();
 
+      Mat4  model0 = baseModel * Mat4::translate(0.0f, 0.0f, 0.0f);
+      shader.setMatrices(model0, view, projection);
+      mesh0.draw();
+
+      Mat4  model1 = baseModel * Mat4::translate(16.0f, 0.0f, 0.0f);
+      shader.setMatrices(model1, view, projection);
+      mesh1.draw();
+
+      Mat4  model2 = baseModel * Mat4::translate(0.0f, 0.0f, 16.0f);
+      shader.setMatrices(model2, view, projection);
+      mesh2.draw();
+      
+      Mat4  model3 = baseModel * Mat4::translate(16.0f, 0.0f, 16.0f);
+      shader.setMatrices(model3, view, projection);
+      mesh3.draw();
+      
       // swap buffers and poll IO events
       glfwSwapBuffers(window.getWindow());
       glfwPollEvents();

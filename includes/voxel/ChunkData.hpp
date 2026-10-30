@@ -12,6 +12,8 @@ private:
 public:
   ChunkData();
   ~ChunkData() = default;
+  ChunkData(const ChunkData& other) = default;
+  ChunkData&  operator=(const ChunkData& other) = default;
 
   BlockID getBlockID(int x, int y, int z) const;
   void    setBlock(int x, int y, int z, BlockID id);

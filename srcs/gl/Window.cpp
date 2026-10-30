@@ -112,10 +112,10 @@ void Window::processInput(Manipulator& manipulator,
     manipulator.translateX(0.01f);
   // [W] 前へ移動
   if (glfwGetKey(window_, GLFW_KEY_W) == GLFW_PRESS)
-    manipulator.translateZ(0.01f);
+    manipulator.translateZ(0.1f);
   // [S] 後ろへ移動
   if (glfwGetKey(window_, GLFW_KEY_S) == GLFW_PRESS)
-    manipulator.translateZ(-0.01f);
+    manipulator.translateZ(-0.1f);
 
   // [Z] 拡大
   if (glfwGetKey(window_, GLFW_KEY_Z) == GLFW_PRESS)

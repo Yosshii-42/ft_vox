@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
 
 // chunk size
 constexpr int VOXEL_CHUNK_SIZE = 16;
@@ -22,6 +23,29 @@ constexpr BlockID BLOCK_MAGMA   = 7;
 constexpr BlockID BLOCK_CRISTAL = 8;
 
 constexpr BlockID BLOCK_ERROR = 255;
+
+// チャンク座標。TerrainGenerator の (cx, cy, cz) に対応する
+struct ChunkCoord {
+  int x{};
+  int y{};
+  int z{};
+};
+
+// チャンク内のローカル座標。各軸 0..VOXEL_CHUNK_SIZE-1
+struct LocalCoord {
+  int x{};
+  int y{};
+  int z{};
+};
+
+bool  operator==(const ChunkCoord& a, const ChunkCoord& b);
+bool  operator!=(const ChunkCoord& a, const ChunkCoord& b);
+bool  operator<(const ChunkCoord&a, const ChunkCoord& b);
+
+// ブロック座標 → それを含むチャンクの座標
+ChunkCoord  toChunkCoord(int bx, int by, int bz);
+// ワールド座標 → それを含むチャンクの座標
+LocalCoord  toLocalCoord(int bx, int by, int bz);
 
 // seed
 using Seed = std::uint64_t;
