@@ -5,8 +5,7 @@
 Window::Window()
  : window_(NULL),
    width_(Common::DEFAULT_WIDTH),
-   height_(Common::DEFAULT_HEIGHT),
-   keyPressed_{false, false, false, false}
+   height_(Common::DEFAULT_HEIGHT)
 {
 // reset cwd
 #ifdef __APPLE__
@@ -75,12 +74,8 @@ GLFWwindow*  Window::getWindow() const
 }
 
 void Window::processInput(Manipulator& manipulator,
-                          float& textureScale,
-                          Common::InputFlags& inputFlags)
+                          float& textureScale)
 {
-  inputFlags.addInstance = false;
-  inputFlags.resetInstances = false;
-
   // esc
 	if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window_, true);
@@ -129,20 +124,6 @@ void Window::processInput(Manipulator& manipulator,
   // [X] 縮小
   if (glfwGetKey(window_, GLFW_KEY_X) == GLFW_PRESS)
     manipulator.scale(0.99f);
-  
-  // [T] Textureとプレーンの切り替え、1回雄ごとの処理
-  if (glfwGetKey(window_, GLFW_KEY_T) == GLFW_PRESS)
-  {
-    if (!keyPressed_.t)
-    {
-      inputFlags.useTexture = !inputFlags.useTexture; // 反転させる
-      keyPressed_.t = true;
-    }
-  }
-  else
-  {
-    keyPressed_.t = false;
-  }
 
   // [C] Textureを細かくする
   if (glfwGetKey(window_, GLFW_KEY_C) == GLFW_PRESS)
@@ -152,46 +133,9 @@ void Window::processInput(Manipulator& manipulator,
   if (glfwGetKey(window_, GLFW_KEY_V) == GLFW_PRESS)
     textureScale *= 0.99f;
 
-  // [P] オブジェクトを増やす
-  if (glfwGetKey(window_, GLFW_KEY_P) == GLFW_PRESS)
-  {
-    if (!keyPressed_.p)
-    {
-      keyPressed_.p = true;
-      inputFlags.addInstance = true;
-    }
-  }
-  else
-    keyPressed_.p = false;
-
-  // [k] オブジェクト数をリセットする
-  if (glfwGetKey(window_, GLFW_KEY_K) == GLFW_PRESS)
-  {
-    if (!keyPressed_.k)
-    {
-      keyPressed_.k = true;
-      inputFlags.resetInstances = true;
-    }
-  }
-  else
-    keyPressed_.k = false;
-
   // [Space] 個別回転
   if (glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS)
     manipulator.rotateRandomAxis(Mat4::radians(1.0f));
-
-  // [m] UV mapping
-  if (glfwGetKey(window_, GLFW_KEY_M) == GLFW_PRESS)
-  {
-    if (!keyPressed_.m)
-    {
-      inputFlags.uvMapping = (inputFlags.uvMapping == Common::UV_AXIS) ?
-                             Common::UV_NORMAL : Common::UV_AXIS;
-      keyPressed_.m = true;
-    }
-  }
-  else
-    keyPressed_.m = false;
 }
 
 bool  Window::shouldClose() const

@@ -46,15 +46,9 @@ int main()
     // camera作成
     Camera  camera;
 
-    // textureをセット
-    float   textureScale = 1.0f;
-
     TextureArray  tex;
     tex.load({"textures/dirt.png"});
-
-    // input flagをインスタンス化
-    Common::InputFlags  inputFlags;
-
+    
     ChunkData chunk;
     TerrainGenerator  generator(12345);
     generator.generateChunk(0, 0, 0, chunk);
@@ -62,29 +56,35 @@ int main()
     ChunkMesh mesh;
     mesh.build(chunk);
     mesh.upload();
+    
+    // input flagをインスタンス化
+    Common::InputFlags  inputFlags;
+    float   textureScale = 1.0f;
 
     // レンダリングループ 
     while (!window.shouldClose())
     {
       // キー操作
-      window.processInput(manipulator, textureScale, inputFlags);
+      window.processInput(manipulator, textureScale);
       
       // 毎フレーム画面と深度バッファをクリア
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       
       // GPUに渡す / 使用するshaderprogramを指定し、作った行列をuniformに送る
       shader.use();
+      shader.setInt("ourTexture", 0);
+
+      // texture
       glActiveTexture(GL_TEXTURE0);
       tex.bind();
-      shader.setInt("ourTexture", 0);
-      shader.setBool("useTexture", inputFlags.useTexture);
       shader.setFloat("textureScale", textureScale);
-    
-      // CPU側で変換行列を作って渡す modelは作りながら渡すので最後
+
+      // 行列
       Mat4  view = camera.getViewMatrix();
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
       Mat4  model = manipulator.getModelMatrix();
       shader.setMatrices(model, view, projection);
+    
       // 描画
       mesh.draw();
 
