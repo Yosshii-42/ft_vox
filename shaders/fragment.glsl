@@ -9,8 +9,10 @@ uniform sampler2DArray ourTexture;
 
 void  main()
 {
+  vec2 tileUV = fract(TexCoord);
+
   fragColor = texture(
     ourTexture,
-    vec3(TexCoord, float(TexLayer))
+    vec3(tileUV, float(TexLayer))
   );
 }

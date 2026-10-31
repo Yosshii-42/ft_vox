@@ -55,3 +55,7 @@ inline int  blockIndex(int x, int y, int z)
 {
   return (x + VOXEL_CHUNK_SIZE * (z + VOXEL_CHUNK_SIZE * y));
 }
+
+inline constexpr int FACE_DX[6] = {-1, 1, 0, 0, 0, 0};
+inline constexpr int FACE_DY[6] = {0, 0, -1, 1, 0, 0};
+inline constexpr int FACE_DZ[6] = {0, 0, 0, 0, -1, 1};

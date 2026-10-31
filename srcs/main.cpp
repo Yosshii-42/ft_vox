@@ -27,8 +27,8 @@ int main()
     glEnable(GL_BLEND);                                 // ブレンディングを有効にする
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // どうブレンドするかを指定する
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);               // 背景色   
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDisable(GL_CULL_FACE);                            // 裏面処理
     // glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -51,48 +51,23 @@ int main()
       "textures/stone.png",
       "textures/bedrock.png"});
     
-    ChunkData chunk0;
-    ChunkData chunk1;
-    ChunkData chunk2;
-    ChunkData chunk3;
-
-    TerrainGenerator  generator(12345);
-    
-
-    generator.generateChunk(0, 0, 0, chunk0);
-    generator.generateChunk(1, 0, 0, chunk1);
-    generator.generateChunk(0, 0, 1, chunk2);
-    generator.generateChunk(1, 0, 1, chunk3);
-
-    
     DrawWorld world;
-    world.addChunk({0, 0, 0}, chunk0);
-    world.addChunk({1, 0, 0}, chunk1);
-    world.addChunk({0, 0, 1}, chunk2);
-    world.addChunk({1, 0, 1}, chunk3);
-        
-    std::vector<Vertex> vertices;
-    
-    auto mesh0 = std::make_unique<ChunkMesh>();
-    world.calcVertex({0, 0, 0}, vertices);
-    mesh0->upload(vertices);
-    world.addMesh({0, 0, 0}, std::move(mesh0));
+    TerrainGenerator  generator(12345);
 
-    auto mesh1 = std::make_unique<ChunkMesh>();
-    world.calcVertex({1, 0, 0}, vertices);
-    mesh1->upload(vertices);
-    world.addMesh({1, 0, 0}, std::move(mesh1));
+    for (int cy = 0; cy < 2; ++cy)
+    {
+      for (int cz = 0; cz < 2; ++cz)
+      {
+        for (int cx = 0; cx < 2; ++cx)
+        {
+          ChunkData chunk;
 
-    auto mesh2 = std::make_unique<ChunkMesh>();
-    world.calcVertex({0, 0, 1}, vertices);
-    mesh2->upload(vertices);
-    world.addMesh({0, 0, 1}, std::move(mesh2));
-
-    auto mesh3 = std::make_unique<ChunkMesh>();
-    world.calcVertex({1, 0, 1}, vertices);
-    mesh3->upload(vertices);
-    world.addMesh({1, 0, 1}, std::move(mesh3));
-
+          generator.generateChunk(cx, cy, cz, chunk);
+          world.addChunk({cx, cy, cz}, chunk);
+        }
+      }
+    }
+    world.buildAllMeshes();
     
     // input flagをインスタンス化
     Common::InputFlags  inputFlags;
@@ -117,25 +92,12 @@ int main()
       shader.setFloat("textureScale", textureScale);
 
       // 行列
+      Mat4  baseModel = manipulator.getModelMatrix();
       Mat4  view = camera.getViewMatrix();
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
       
-      Mat4  baseModel = manipulator.getModelMatrix();
-      
-      for (int cz = 0; cz < 2; ++cz)
-      {
-        for (int cx = 0; cx < 2; ++cx)
-        {
-          ChunkCoord coord{cx, 0, cz};
-          ChunkMesh* mesh = world.getMesh(coord);
-          if (mesh == nullptr)
-            continue;
-          
-          Mat4 model = baseModel * Mat4::translate(cx * VOXEL_CHUNK_SIZE, 0, cz * VOXEL_CHUNK_SIZE);
-          shader.setMatrices(model, view, projection);
-          mesh->draw();
-        }
-      }
+      // 描画
+      world.draw(shader, baseModel, view, projection);
 
       // swap buffers and poll IO events
       glfwSwapBuffers(window.getWindow());
