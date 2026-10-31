@@ -22,6 +22,35 @@ const ChunkData*  DrawWorld::getChunk(const ChunkCoord& coord) const
   return it->second.get();
 }
 
+// ChunkMeshはVAO,VBOなどのGPUリソースを所有しているのでコピーできない
+void  DrawWorld::addMesh(const ChunkCoord& coord, std::unique_ptr<ChunkMesh> mesh)
+{
+  if (meshes_.find(coord) != meshes_.end())
+    return ;
+
+  meshes_[coord] = std::move(mesh); // ChunkMeshの所有権をworldに移す
+}
+
+ChunkMesh*  DrawWorld::getMesh(const ChunkCoord& coord)
+{
+  auto it = meshes_.find(coord);
+
+  if (it == meshes_.end())
+    return nullptr;
+
+  return it->second.get();
+}
+
+const ChunkMesh*  DrawWorld::getMesh(const ChunkCoord& coord) const
+{
+  auto it = meshes_.find(coord);
+
+  if (it == meshes_.end())
+    return nullptr;
+
+  return it->second.get();
+}
+
 BlockID DrawWorld::getBlock(int bx, int by, int bz) const
 {
   ChunkCoord  coord = toChunkCoord(bx, by, bz);
@@ -175,3 +204,4 @@ void  DrawWorld::addFacePosZ(std::vector<Vertex>& vertices,
   vertices.push_back({x,     y + 1, z + 1, 0, 1, layer, 5});
   vertices.push_back({x,     y,     z + 1, 0, 0, layer, 5});
 }
+

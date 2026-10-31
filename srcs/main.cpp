@@ -70,22 +70,29 @@ int main()
     world.addChunk({1, 0, 0}, chunk1);
     world.addChunk({0, 0, 1}, chunk2);
     world.addChunk({1, 0, 1}, chunk3);
-    
-    ChunkMesh mesh0;
-    ChunkMesh mesh1;
-    ChunkMesh mesh2;
-    ChunkMesh mesh3;
-
+        
     std::vector<Vertex> vertices;
-
+    
+    auto mesh0 = std::make_unique<ChunkMesh>();
     world.calcVertex({0, 0, 0}, vertices);
-    mesh0.upload(vertices);
+    mesh0->upload(vertices);
+    world.addMesh({0, 0, 0}, std::move(mesh0));
+
+    auto mesh1 = std::make_unique<ChunkMesh>();
     world.calcVertex({1, 0, 0}, vertices);
-    mesh1.upload(vertices);
+    mesh1->upload(vertices);
+    world.addMesh({1, 0, 0}, std::move(mesh1));
+
+    auto mesh2 = std::make_unique<ChunkMesh>();
     world.calcVertex({0, 0, 1}, vertices);
-    mesh2.upload(vertices);
+    mesh2->upload(vertices);
+    world.addMesh({0, 0, 1}, std::move(mesh2));
+
+    auto mesh3 = std::make_unique<ChunkMesh>();
     world.calcVertex({1, 0, 1}, vertices);
-    mesh3.upload(vertices);
+    mesh3->upload(vertices);
+    world.addMesh({1, 0, 1}, std::move(mesh3));
+
     
     // input flagをインスタンス化
     Common::InputFlags  inputFlags;
@@ -114,23 +121,22 @@ int main()
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
       
       Mat4  baseModel = manipulator.getModelMatrix();
-
-      Mat4  model0 = baseModel * Mat4::translate(0.0f, 0.0f, 0.0f);
-      shader.setMatrices(model0, view, projection);
-      mesh0.draw();
-
-      Mat4  model1 = baseModel * Mat4::translate(16.0f, 0.0f, 0.0f);
-      shader.setMatrices(model1, view, projection);
-      mesh1.draw();
-
-      Mat4  model2 = baseModel * Mat4::translate(0.0f, 0.0f, 16.0f);
-      shader.setMatrices(model2, view, projection);
-      mesh2.draw();
       
-      Mat4  model3 = baseModel * Mat4::translate(16.0f, 0.0f, 16.0f);
-      shader.setMatrices(model3, view, projection);
-      mesh3.draw();
-      
+      for (int cz = 0; cz < 2; ++cz)
+      {
+        for (int cx = 0; cx < 2; ++cx)
+        {
+          ChunkCoord coord{cx, 0, cz};
+          ChunkMesh* mesh = world.getMesh(coord);
+          if (mesh == nullptr)
+            continue;
+          
+          Mat4 model = baseModel * Mat4::translate(cx * VOXEL_CHUNK_SIZE, 0, cz * VOXEL_CHUNK_SIZE);
+          shader.setMatrices(model, view, projection);
+          mesh->draw();
+        }
+      }
+
       // swap buffers and poll IO events
       glfwSwapBuffers(window.getWindow());
       glfwPollEvents();
