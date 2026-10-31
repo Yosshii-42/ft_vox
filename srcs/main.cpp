@@ -71,36 +71,21 @@ int main()
     world.addChunk({0, 0, 1}, chunk2);
     world.addChunk({1, 0, 1}, chunk3);
     
-    std::cout << "Expected: "
-    << static_cast<int>(chunk1.getBlockID(2, 5, 3))
-    << '\n';
-    
-    std::cout << "Actual: "
-    << static_cast<int>(world.getBlock(18, 5, 3))
-    << '\n';
-    
     ChunkMesh mesh0;
     ChunkMesh mesh1;
     ChunkMesh mesh2;
     ChunkMesh mesh3;
 
-    const ChunkData*  c0 = world.getChunk({0, 0, 0});
-    const ChunkData*  c1 = world.getChunk({1, 0, 0});
-    const ChunkData*  c2 = world.getChunk({0, 0, 1});
-    const ChunkData*  c3 = world.getChunk({1, 0, 1});
+    std::vector<Vertex> vertices;
 
-    if (c0 == nullptr || c1 == nullptr || c2 == nullptr || c3 == nullptr)
-      throw std::runtime_error("Chunk not found");
-
-    mesh0.build(*c0, nullptr, c1);
-    mesh1.build(*c1, c0, nullptr);
-    mesh2.build(*c2, nullptr, c3);
-    mesh3.build(*c3, c2, nullptr);
-
-    mesh0.upload();
-    mesh1.upload();
-    mesh2.upload();
-    mesh3.upload();
+    world.calcVertex({0, 0, 0}, vertices);
+    mesh0.upload(vertices);
+    world.calcVertex({1, 0, 0}, vertices);
+    mesh1.upload(vertices);
+    world.calcVertex({0, 0, 1}, vertices);
+    mesh2.upload(vertices);
+    world.calcVertex({1, 0, 1}, vertices);
+    mesh3.upload(vertices);
     
     // input flagをインスタンス化
     Common::InputFlags  inputFlags;

@@ -1,10 +1,12 @@
 #pragma once
 
 #include "voxel/ChunkData.hpp"
+#include "voxel/ChunkMesh.hpp"
 #include "voxel/VoxCommon.hpp"
 
 #include <map>
 #include <memory>
+#include <vector>
 
 class DrawWorld {
 private:
@@ -19,4 +21,16 @@ public:
   void              addChunk(const ChunkCoord& coord, const ChunkData& chunk);
   const ChunkData*  getChunk(const ChunkCoord& coord) const;
   BlockID           getBlock(int bx, int by, int bz) const;
+  
+  void              calcVertex(const ChunkCoord& coord,
+                               std::vector<Vertex>& vertices) const;
+  float getTextureLayer(BlockID id) const;
+
+  void  addFace(std::vector<Vertex>& vertices, float x, float y, float z, int face, float layer) const;
+  void  addFaceNegX(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
+  void  addFacePosX(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
+  void  addFaceNegY(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
+  void  addFacePosY(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
+  void  addFaceNegZ(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
+  void  addFacePosZ(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
 };
