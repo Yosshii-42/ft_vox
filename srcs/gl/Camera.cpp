@@ -1,6 +1,7 @@
 #include "gl/Camera.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 Camera::Camera()
   : yaw_(0.0f),
@@ -86,6 +87,9 @@ void  Camera::turnDown(float deltaTime)
 
 void  Camera::rotate(float deltaX, float deltaY)
 {
+  std::cout << "deltaX: " << deltaX
+          << " deltaY: " << deltaY << '\n';
+
   const float sensitivity = 0.002f;
 
   yaw_ -= deltaX * sensitivity;

@@ -119,7 +119,35 @@ void Window::processInput(float& textureScale, Camera& camera, float deltaTime)
   if (glfwGetKey(window_, GLFW_KEY_V) == GLFW_PRESS)
     textureScale *= 0.99f;
 
-  
+  // tab判定
+  bool  tabDown = glfwGetKey(window_, GLFW_KEY_TAB) == GLFW_PRESS;
+  if (tabDown && !tabPressed_)
+  {
+    mouseCaputured_ = !mouseCaputured_;
+    glfwSetInputMode(window_, GLFW_CURSOR,
+                     mouseCaputured_ ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    firstMouse_ = true;
+  }
+  tabPressed_ = tabDown;
+
+  // マウス操作
+  double  mouseX;
+  double  mouseY;
+
+  glfwGetCursorPos(window_, &mouseX, &mouseY);
+
+  if (firstMouse_)
+  {
+    lastMouseX_ = mouseX;
+    lastMouseY_ = mouseY;
+    firstMouse_ = false;
+  }
+
+  float deltaX = static_cast<float>(mouseX - lastMouseX_);
+  float deltaY = static_cast<float>(mouseY - lastMouseY_);
+  lastMouseX_ = mouseX;
+  lastMouseY_ = mouseY;
+  camera.rotate(deltaX, deltaY);
 }
 
 bool  Window::shouldClose() const
