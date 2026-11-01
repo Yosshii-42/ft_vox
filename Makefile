@@ -43,6 +43,7 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/gl/TextureArray.cpp \
 				srcs/gl/Camera.cpp \
 				srcs/gl/StbImage.cpp \
+				srcs/gl/Crosshair.cpp \
 				srcs/math/Mat4.cpp \
 				srcs/math/Vec2.cpp \
 				srcs/math/Vec3.cpp \

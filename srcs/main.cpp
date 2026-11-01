@@ -8,6 +8,7 @@
 #include "gl/Window.hpp"
 #include "gl/TextureArray.hpp"
 #include "gl/Camera.hpp"
+#include "gl/Crosshair.hpp"
 #include "math/Vec3.hpp"
 #include "voxel/ChunkMesh.hpp"
 #include "voxel/ChunkData.hpp"
@@ -35,7 +36,9 @@ int main()
    
     // shaderをインスタンス化 注)OpenGLコンテキストを使うのでWindowの後
     Shader  shader("shaders/vertex.glsl", "shaders/fragment.glsl");
-    
+    Shader  crosshairShader("shaders/crosshair.vert", "shaders/crosshair.frag");
+    Crosshair crosshair;
+
     // shaderが正常にコンパイルされたらwindow表示する
     window.show();
 
@@ -113,6 +116,11 @@ int main()
       
       // 描画
       world.draw(shader, baseModel, view, projection);
+
+      // 十字表示
+      glDisable(GL_DEPTH_TEST);
+      crosshair.draw(crosshairShader, window.getAspectRatio());
+      glEnable(GL_DEPTH_TEST);
 
       // swap buffers and poll IO events
       glfwSwapBuffers(window.getWindow());
