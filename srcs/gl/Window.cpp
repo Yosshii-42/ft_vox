@@ -38,6 +38,7 @@ glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
 	glfwMakeContextCurrent(window_);
   glfwSetWindowUserPointer(window_, this);
   glfwSetFramebufferSizeCallback(window_, Window::framebufferSizeCallback);
+  glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // マウスの移動量取得
 
 	// glad: OpenGL関数を呼び出す前にGLADを初期化する
   // -----------------------------------------
@@ -73,8 +74,7 @@ GLFWwindow*  Window::getWindow() const
   return (window_);
 }
 
-void Window::processInput(Manipulator& manipulator, float& textureScale,
-                          Camera& camera, float deltaTime)
+void Window::processInput(float& textureScale, Camera& camera, float deltaTime)
 {
   // esc
 	if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -92,23 +92,11 @@ void Window::processInput(Manipulator& manipulator, float& textureScale,
   // [↓] x軸下回転
   if (glfwGetKey(window_, GLFW_KEY_DOWN) == GLFW_PRESS)
     camera.turnDown(deltaTime);
-  // [Q] z軸右回転
-  if (glfwGetKey(window_, GLFW_KEY_Q) == GLFW_PRESS)
-    manipulator.rotateZ(Mat4::radians(1.0f));
-  // [E] z軸左回転
-  if (glfwGetKey(window_, GLFW_KEY_E) == GLFW_PRESS)
-    manipulator.rotateZ(Mat4::radians(-1.0f));
   
-  // [R] 上移動
-  if (glfwGetKey(window_, GLFW_KEY_R) == GLFW_PRESS)
-    manipulator.translateY(0.1f);
-  // [F] 下移動
-  if (glfwGetKey(window_, GLFW_KEY_F) == GLFW_PRESS)
-    manipulator.translateY(-0.1f);
-  // [A] 左移動
+  // [A] 左へ移動
   if (glfwGetKey(window_, GLFW_KEY_A) == GLFW_PRESS)
     camera.moveLeft(deltaTime);
-  // [D] 右移動
+  // [D] 右へ移動
   if (glfwGetKey(window_, GLFW_KEY_D) == GLFW_PRESS)
     camera.moveRight(deltaTime);
   // [W] 前へ移動
@@ -124,24 +112,14 @@ void Window::processInput(Manipulator& manipulator, float& textureScale,
   if (glfwGetKey(window_, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     camera.moveDown(deltaTime);
 
-  // [Z] 拡大
-  if (glfwGetKey(window_, GLFW_KEY_Z) == GLFW_PRESS)
-    manipulator.scale(1.01f);
-  // [X] 縮小
-  if (glfwGetKey(window_, GLFW_KEY_X) == GLFW_PRESS)
-    manipulator.scale(0.99f);
-
   // [C] Textureを細かくする
   if (glfwGetKey(window_, GLFW_KEY_C) == GLFW_PRESS)
     textureScale *= 1.01f;
-
   // [V] Textureを大きくする
   if (glfwGetKey(window_, GLFW_KEY_V) == GLFW_PRESS)
     textureScale *= 0.99f;
 
-  // // [Space] 個別回転
-  // if (glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS)
-  //   manipulator.rotateRandomAxis(Mat4::radians(1.0f));
+  
 }
 
 bool  Window::shouldClose() const

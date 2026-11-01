@@ -36,6 +36,8 @@ public:
   void  turnUp(float deltaTime);
   void  turnDown(float deltaTime);
 
+  void  rotate(float drltaX, float deltaY);
+
   Mat4  getViewMatrix() const;
   Mat4  getProjectionMatrix(float aspectRatio) const;
 };

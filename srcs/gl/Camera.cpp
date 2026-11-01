@@ -1,5 +1,7 @@
 #include "gl/Camera.hpp"
 
+#include <algorithm>
+
 Camera::Camera()
   : yaw_(0.0f),
     pitch_(0.0f),
@@ -80,6 +82,17 @@ void  Camera::turnUp(float deltaTime)
 void  Camera::turnDown(float deltaTime)
 {
   pitch_ -= rotationSpeed_ * deltaTime;
+}
+
+void  Camera::rotate(float deltaX, float deltaY)
+{
+  const float sensitivity = 0.002f;
+
+  yaw_ -= deltaX * sensitivity;
+  pitch_ -= deltaY * sensitivity;
+
+  const float limit = Mat4::radians(89.0f);
+  pitch_ = std::clamp(pitch_, -limit, limit);
 }
 
 Mat4  Camera::getViewMatrix() const

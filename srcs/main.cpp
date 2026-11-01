@@ -7,7 +7,6 @@
 #include "gl/Shader.hpp"
 #include "gl/Window.hpp"
 #include "gl/TextureArray.hpp"
-#include "gl/Manipulator.hpp"
 #include "gl/Camera.hpp"
 #include "math/Vec3.hpp"
 #include "voxel/ChunkMesh.hpp"
@@ -40,8 +39,6 @@ int main()
     // shaderが正常にコンパイルされたらwindow表示する
     window.show();
 
-    Manipulator manipulator(Vec3(0, 0, 0));
-    
     // camera作成
     Camera  camera;
     camera.setPosition(Vec3(16.0f, 5.0f, 16.0f));
@@ -55,11 +52,11 @@ int main()
     DrawWorld world;
     TerrainGenerator  generator(12345);
 
-    for (int cy = 0; cy < 2; ++cy)
+    for (int cy = 0; cy < 4; ++cy)
     {
-      for (int cz = 0; cz < 2; ++cz)
+      for (int cz = 0; cz < 4; ++cz)
       {
-        for (int cx = 0; cx < 2; ++cx)
+        for (int cx = 0; cx < 4; ++cx)
         {
           ChunkData chunk;
 
@@ -95,7 +92,7 @@ int main()
       }
       lastTime = currentTime;
       // キー操作
-      window.processInput(manipulator, textureScale, camera, deltaTime);
+      window.processInput(textureScale, camera, deltaTime);
       
       // 毎フレーム画面と深度バッファをクリア
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -110,8 +107,7 @@ int main()
       shader.setFloat("textureScale", textureScale);
 
       // 行列
-      Mat4  baseModel = manipulator.getModelMatrix();
-      // Mat4  baseModel;
+      Mat4  baseModel;
       Mat4  view = camera.getViewMatrix();
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
       

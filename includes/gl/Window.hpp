@@ -13,6 +13,9 @@ private:
   GLFWwindow* window_;
   int         width_;
   int         height_;
+  // double      lastMouseX_ = 0.0;
+  // double      lastMouseY_ = 0.0;
+  // bool        firstMouse_ = true;
 
   static void framebufferSizeCallback(GLFWwindow* window,
                                       int width,
@@ -26,8 +29,7 @@ public:
   
   void  show();
   GLFWwindow* getWindow() const;
-  void  processInput(Manipulator& Manipulator, float& textureScale,
-                     Camera& camera, float deltaTime);
+  void  processInput(float& textureScale, Camera& camera, float deltaTime);
   bool  shouldClose() const;
   float getAspectRatio() const;
 };

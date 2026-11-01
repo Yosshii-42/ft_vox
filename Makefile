@@ -41,7 +41,6 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/gl/Window.cpp \
 				srcs/gl/Shader.cpp \
 				srcs/gl/TextureArray.cpp \
-				srcs/gl/Manipulator.cpp \
 				srcs/gl/Camera.cpp \
 				srcs/gl/StbImage.cpp \
 				srcs/math/Mat4.cpp \
