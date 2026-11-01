@@ -1,6 +1,9 @@
 #include "world/DrawWorld.hpp"
 #include "voxel/VoxCommon.hpp"
+#include "voxel/ChunkMesh.hpp"
 #include "world/TerrainGenerator.hpp"
+#include <set>
+#include <GLFW/glfw3.h>
 
 DrawWorld::DrawWorld() {}
 
@@ -30,6 +33,8 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
   if (getChunk(coord) == nullptr)
     return;
 
+  double  start = glfwGetTime();
+
   std::vector<Vertex> vertices;
 
   #ifdef DEBUG_NORMAL_MESH
@@ -46,16 +51,30 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
     }
   #endif
 
+  double  meshTime = (glfwGetTime() - start) * 1000.0;
+
   ChunkMesh*  mesh = getMesh(coord);
   if (mesh != nullptr)
   {
+    double uploadStart = glfwGetTime();
     mesh->upload(vertices); // ->GPU
+    double uploadTime = (glfwGetTime() - uploadStart) * 1000.0;
+    std::cout << "Update mesh: "
+              << meshTime << " ms, upload time: "
+              << uploadTime << '\n';    
     return;
   }
 
   auto  newMesh = std::make_unique<ChunkMesh>();
+
+  double  uploadStart = glfwGetTime();
   newMesh->upload(vertices);  // ->GPU
+  double  uploadTime = (glfwGetTime() - uploadStart) * 1000.0;
   addMesh(coord, std::move(newMesh));
+
+  std::cout << "New mesh: "
+            << meshTime << " ms, upload time: "
+            << uploadTime << '\n';
 }
 
 void  DrawWorld::buildAllMeshes()
@@ -466,10 +485,70 @@ void  DrawWorld::addGreedyFacePosZ(std::vector<Vertex>& vertices,
   vertices.push_back({x,     y,     z + 1, 0, 0, layer, 5});
 }
 
-// void  loadAround(int centerCx, int centerCy, TerrainGenerator& generator)
-// {
+void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& generator)
+{
+  const int radius = 1;
+  const int heightChunks = 4;
 
-// }
+  std::set<ChunkCoord>  dirtyChunks;
+
+  for (int cy = 0; cy < heightChunks; ++cy)
+  {
+    for (int cz = centerCz - radius; cz <= centerCz + radius; ++cz)
+    {
+      for (int cx = centerCx - radius; cx <= centerCx + radius; ++cx)
+      {
+        ChunkCoord  coord{cx, cy, cz};
+
+        if (getChunk(coord) != nullptr)
+        {
+          continue;
+        }
+        
+        ChunkData chunk;
+        generator.generateChunk(cx, cy, cz, chunk);
+        addChunk(coord, chunk);
+
+        std::cout << "Generated chunk: "
+                  << cx << ", "
+                  << cy << ", "
+                  << cz << '\n';
+
+        dirtyChunks.insert(coord);
+
+        const ChunkCoord  neighbors[] = {
+          {cx - 1, cy, cz},
+          {cx + 1, cy, cz},
+          {cx, cy - 1, cz},
+          {cx, cy + 1, cz},
+          {cx, cy, cz - 1},
+          {cx, cy, cz + 1}
+        };
+
+        for (const ChunkCoord& neighbor : neighbors)
+        {
+          if (getChunk(neighbor) != nullptr)
+            dirtyChunks.insert(neighbor);
+        }
+      }
+    }
+  }
+
+  // double  meshStart = glfwGetTime();
+
+  for (const ChunkCoord& coord : dirtyChunks)
+    buildMesh(coord);
+  
+  // double  meshTime = (glfwGetTime() - meshStart) * 1000.0;
+
+  // if (!dirtyChunks.empty())
+  // {
+  //   std::cout << "Mesh build: "
+  //             << meshTime << " ms, chunks: "
+  //             << dirtyChunks.size() << '\n';
+  // }    
+
+}
 
 // 描画
 void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,

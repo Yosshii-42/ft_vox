@@ -54,7 +54,6 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/world/TerrainGenerator.cpp \
 				srcs/world/DrawWorld.cpp
 
-
 OBJS	= $(SRCS:.cpp=.o)
 OBJS	:= $(OBJS:.c=.o)
 
@@ -69,6 +68,7 @@ $(GLAD_DIR)/src/%.o: $(GLAD_DIR)/src/%.c
 $(GLAD_FILE): $(SCRS_DIR)/install_glad.sh
 	./$(SCRS_DIR)/install_glad.sh
 
+# stb生成
 $(STB_FILE): $(SCRS_DIR)/install_stb.sh
 	./$(SCRS_DIR)/install_stb.sh
 

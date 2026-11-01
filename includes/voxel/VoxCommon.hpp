@@ -47,6 +47,9 @@ ChunkCoord  toChunkCoord(int bx, int by, int bz);
 // ワールド座標 → それを含むチャンクの座標
 LocalCoord  toLocalCoord(int bx, int by, int bz);
 
+int floorDiv(int a);
+int positiveMod(int a);
+
 // seed
 using Seed = std::uint64_t;
 
@@ -59,3 +62,4 @@ inline int  blockIndex(int x, int y, int z)
 inline constexpr int FACE_DX[6] = {-1, 1, 0, 0, 0, 0};
 inline constexpr int FACE_DY[6] = {0, 0, -1, 1, 0, 0};
 inline constexpr int FACE_DZ[6] = {0, 0, 0, 0, -1, 1};
+

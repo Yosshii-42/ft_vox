@@ -44,7 +44,7 @@ int main()
 
     // camera作成
     Camera  camera;
-    camera.setPosition(Vec3(8.0f, 3.0f, 30.0f));
+    camera.setPosition(Vec3(16.0f, 35.0f, 16.0f));
 
     TextureArray  tex;
     tex.load({
@@ -55,45 +55,38 @@ int main()
     DrawWorld world;
     TerrainGenerator  generator(12345);
 
-    for (int cy = 0; cy < 4; ++cy)
-    {
-      for (int cz = 0; cz < 4; ++cz)
-      {
-        for (int cx = 0; cx < 4; ++cx)
-        {
-          ChunkData chunk;
+    const Vec3& pos = camera.getPosition();
 
-          generator.generateChunk(cx, cy, cz, chunk);
-          world.addChunk({cx, cy, cz}, chunk);
-        }
-      }
-    }
+    int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
+    int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
+
+    world.loadAround(cx, cz, generator);
     world.buildAllMeshes();
     
     // input flagをインスタンス化
     // Common::InputFlags  inputFlags;
     float   textureScale = 1.0f;
     float   lastTime = glfwGetTime();
-    float   lastPrintTime = glfwGetTime();
-    int     frameCount = 0;
 
     // レンダリングループ 
     while (!window.shouldClose())
     {
-      ++frameCount;
       double  currentTime = glfwGetTime();
       float   deltaTime = static_cast<float>(currentTime - lastTime);
-      double  elapsed = currentTime - lastPrintTime;
-      if (elapsed >= 1.0)
-      {
-        std::cout << "Average FPS: "
-                  << frameCount / elapsed << '\n';
-
-        frameCount = 0;
-
-        lastPrintTime = currentTime;
-      }
       lastTime = currentTime;
+
+      const Vec3& pos = camera.getPosition();
+      int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
+      int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
+      
+      // double  start = glfwGetTime();
+      world.loadAround(cx, cz, generator);
+      // double  elapsed = (glfwGetTime() - start) * 1000.0;
+      // if (elapsed > 1.0)
+      //   std::cout << "Chunk loading: " << elapsed << "ms" << std::endl;
+
+      glfwPollEvents();
+
       // キー操作
       window.processInput(textureScale, camera, deltaTime);
       

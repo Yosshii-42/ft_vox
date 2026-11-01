@@ -56,7 +56,7 @@ public:
     float w, float h, float layer) const;
 
   //
-  // void  loadAround(int centerCx, int centerCy, TerrainGenerator& generator);
+  void  loadAround(int centerCx, int centerCz, TerrainGenerator& generator);
     
 
   // 描画

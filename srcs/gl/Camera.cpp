@@ -17,6 +17,11 @@ void  Camera::setPosition(const Vec3& position)
   position_ = position;
 }
 
+Vec3& Camera::getPosition()
+{
+  return position_;
+}
+
 void  Camera::moveForward(float deltaTime)
 {
   float distance = moveSpeed_ * deltaTime;
