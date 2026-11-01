@@ -1,6 +1,6 @@
 #include "world/DrawWorld.hpp"
-
 #include "voxel/VoxCommon.hpp"
+#include "world/TerrainGenerator.hpp"
 
 DrawWorld::DrawWorld() {}
 
@@ -120,6 +120,7 @@ float DrawWorld::getTextureLayer(BlockID id) const
   }
 }
 
+// 頂点データ作成
 void  DrawWorld::calcGreedyVertexUVx(const ChunkCoord& coord,
                                   std::vector<Vertex>& vertices, int face) const
 {
@@ -298,7 +299,6 @@ void  DrawWorld::calcGreedyVertexUVy(const ChunkCoord& coord,
   }
 }
 
-
 void  DrawWorld::calcGreedyVertexUVz(const ChunkCoord& coord,
                                   std::vector<Vertex>& vertices, int face) const
 {
@@ -442,7 +442,8 @@ void  DrawWorld::addGreedyFacePosY(std::vector<Vertex>& vertices,
 
 void  DrawWorld::addGreedyFaceNegZ(std::vector<Vertex>& vertices,
                                    float x, float y, float z,
-                                   float w, float h, float layer) const{
+                                   float w, float h, float layer) const
+{
   vertices.push_back({x + w, y,     z,     0, 0, layer, 4});
   vertices.push_back({x,     y,     z,     w, 0, layer, 4});
   vertices.push_back({x,     y + h, z,     w, h, layer, 4});
@@ -454,7 +455,8 @@ void  DrawWorld::addGreedyFaceNegZ(std::vector<Vertex>& vertices,
 
 void  DrawWorld::addGreedyFacePosZ(std::vector<Vertex>& vertices,
                                    float x, float y, float z,
-                                   float w, float h, float layer) const{
+                                   float w, float h, float layer) const
+{
   vertices.push_back({x,     y,     z + 1, 0, 0, layer, 5});
   vertices.push_back({x + w, y,     z + 1, w, 0, layer, 5});
   vertices.push_back({x + w, y + h, z + 1, w, h, layer, 5});
@@ -463,6 +465,11 @@ void  DrawWorld::addGreedyFacePosZ(std::vector<Vertex>& vertices,
   vertices.push_back({x,     y + h, z + 1, 0, h, layer, 5});
   vertices.push_back({x,     y,     z + 1, 0, 0, layer, 5});
 }
+
+// void  loadAround(int centerCx, int centerCy, TerrainGenerator& generator)
+// {
+
+// }
 
 // 描画
 void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
@@ -483,6 +490,7 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
   }
 }
 
+// 古いコード
 void  DrawWorld::calcVertex(const ChunkCoord& coord,
                             std::vector<Vertex>& vertices) const
 {

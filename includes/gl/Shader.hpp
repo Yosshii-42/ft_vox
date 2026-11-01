@@ -1,14 +1,13 @@
 #pragma once
 
+#include "math/Mat4.hpp"
+#include "math/Vec4.hpp"
+#include "math/Vec3.hpp"
 #include <glad/glad.h>
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
-#include "math/Mat4.hpp"
-#include "math/Vec4.hpp"
-#include "math/Vec3.hpp"
 
 class Shader {
 private:

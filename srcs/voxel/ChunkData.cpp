@@ -1,5 +1,4 @@
 #include "voxel/ChunkData.hpp"
-
 #include <stdexcept>
 
 ChunkData::ChunkData() {

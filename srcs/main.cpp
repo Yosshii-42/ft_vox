@@ -44,7 +44,7 @@ int main()
 
     // camera作成
     Camera  camera;
-    camera.setPosition(Vec3(16.0f, 5.0f, 16.0f));
+    camera.setPosition(Vec3(8.0f, 3.0f, 30.0f));
 
     TextureArray  tex;
     tex.load({
@@ -71,7 +71,7 @@ int main()
     world.buildAllMeshes();
     
     // input flagをインスタンス化
-    Common::InputFlags  inputFlags;
+    // Common::InputFlags  inputFlags;
     float   textureScale = 1.0f;
     float   lastTime = glfwGetTime();
     float   lastPrintTime = glfwGetTime();

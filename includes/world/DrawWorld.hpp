@@ -5,7 +5,7 @@
 #include "voxel/VoxCommon.hpp"
 #include "math/Mat4.hpp"
 #include "gl/Shader.hpp"
-
+#include "world/TerrainGenerator.hpp"
 #include <map>
 #include <memory>
 #include <vector>
@@ -54,11 +54,16 @@ public:
     float w, float h, float layer) const;
   void  addGreedyFacePosZ(std::vector<Vertex>& vertices, float x, float y, float z,
     float w, float h, float layer) const;
-  
+
+  //
+  // void  loadAround(int centerCx, int centerCy, TerrainGenerator& generator);
+    
+
   // 描画
   void  draw(Shader& shader, const Mat4& baseModel,
     const Mat4& view, const Mat4& projection) const;
-                
+
+  // 旧Vertices作成
   void  calcVertex(const ChunkCoord& coord, std::vector<Vertex>& vertices) const;
   void  addFace(std::vector<Vertex>& vertices, float x, float y, float z, int face, float layer) const;
   void  addFaceNegX(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;

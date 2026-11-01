@@ -108,8 +108,8 @@ void Window::processInput(float& textureScale, Camera& camera, float deltaTime)
   // [Space] 上へ移動
   if (glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS)
     camera.moveUp(deltaTime);
-  // [Left Shift] 下へ移動
-  if (glfwGetKey(window_, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+  // [Right Shift] 下へ移動
+  if (glfwGetKey(window_, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
     camera.moveDown(deltaTime);
 
   // [C] Textureを細かくする

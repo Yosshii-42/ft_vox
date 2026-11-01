@@ -50,7 +50,6 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/math/Vec4.cpp \
 				srcs/voxel/ChunkMesh.cpp \
 				srcs/voxel/ChunkData.cpp \
-				srcs/voxel/Block.cpp \
 				srcs/voxel/VoxCommon.cpp \
 				srcs/world/TerrainGenerator.cpp \
 				srcs/world/DrawWorld.cpp

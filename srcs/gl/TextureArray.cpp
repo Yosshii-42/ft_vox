@@ -1,5 +1,4 @@
 #include "gl/TextureArray.hpp"
-
 #include <stb/stb_image.h>
 
 TextureArray::~TextureArray()

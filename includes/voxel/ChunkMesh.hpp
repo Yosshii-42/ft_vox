@@ -3,7 +3,6 @@
 
 #include "voxel/ChunkData.hpp"
 #include "voxel/VoxCommon.hpp"
-
 #include<iostream>
 #include<vector>
 

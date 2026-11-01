@@ -1,5 +1,4 @@
 #include "gl/Camera.hpp"
-
 #include <algorithm>
 #include <iostream>
 
@@ -12,7 +11,6 @@ Camera::Camera()
 {}
 
 Camera::~Camera() {}
-
 
 void  Camera::setPosition(const Vec3& position)
 {
@@ -87,9 +85,6 @@ void  Camera::turnDown(float deltaTime)
 
 void  Camera::rotate(float deltaX, float deltaY)
 {
-  std::cout << "deltaX: " << deltaX
-          << " deltaY: " << deltaY << '\n';
-
   const float sensitivity = 0.002f;
 
   yaw_ -= deltaX * sensitivity;
@@ -99,6 +94,7 @@ void  Camera::rotate(float deltaX, float deltaY)
   pitch_ = std::clamp(pitch_, -limit, limit);
 }
 
+// get Mat4
 Mat4  Camera::getViewMatrix() const
 {
   Mat4  view;

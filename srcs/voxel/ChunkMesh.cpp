@@ -1,8 +1,6 @@
 #include"voxel/ChunkMesh.hpp"
-
 #include "voxel/ChunkData.hpp"
 #include "voxel/VoxCommon.hpp"
-
 #include<glad/glad.h>
 #include<cstddef>
 

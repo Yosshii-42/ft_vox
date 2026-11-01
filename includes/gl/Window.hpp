@@ -1,12 +1,11 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <iostream>
-
 #include "Common.hpp"
 #include "gl/Manipulator.hpp"
 #include "gl/Camera.hpp"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <iostream>
 
 class Window {
 private:
@@ -22,7 +21,7 @@ private:
   static void framebufferSizeCallback(GLFWwindow* window,
                                       int width,
                                       int height);
-    
+
 public:
   Window();
   ~Window();
