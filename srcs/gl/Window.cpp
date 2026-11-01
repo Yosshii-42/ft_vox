@@ -1,5 +1,6 @@
 #include "gl/Window.hpp"
 #include "Common.hpp"
+#include "gl/Camera.hpp"
 
 Window::Window()
  : window_(NULL),
@@ -72,8 +73,8 @@ GLFWwindow*  Window::getWindow() const
   return (window_);
 }
 
-void Window::processInput(Manipulator& manipulator,
-                          float& textureScale)
+void Window::processInput(Manipulator& manipulator, float& textureScale,
+                          Camera& camera, float deltaTime)
 {
   // esc
 	if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -81,16 +82,16 @@ void Window::processInput(Manipulator& manipulator,
 
   // [→] 右回転
   if (glfwGetKey(window_, GLFW_KEY_RIGHT) == GLFW_PRESS)
-    manipulator.rotateY(Mat4::radians(1.0f));
+    camera.turnRight(deltaTime);
   // [←] 左回転
   if (glfwGetKey(window_, GLFW_KEY_LEFT ) == GLFW_PRESS)
-    manipulator.rotateY(Mat4::radians(-1.0f));
+    camera.turnLeft(deltaTime);
   // [↑] x軸上回転
   if (glfwGetKey(window_, GLFW_KEY_UP) == GLFW_PRESS)
-    manipulator.rotateX(Mat4::radians(-1.0f));
+    camera.turnUp(deltaTime);
   // [↓] x軸下回転
   if (glfwGetKey(window_, GLFW_KEY_DOWN) == GLFW_PRESS)
-    manipulator.rotateX(Mat4::radians(1.0f));
+    camera.turnDown(deltaTime);
   // [Q] z軸右回転
   if (glfwGetKey(window_, GLFW_KEY_Q) == GLFW_PRESS)
     manipulator.rotateZ(Mat4::radians(1.0f));
@@ -106,16 +107,22 @@ void Window::processInput(Manipulator& manipulator,
     manipulator.translateY(-0.1f);
   // [A] 左移動
   if (glfwGetKey(window_, GLFW_KEY_A) == GLFW_PRESS)
-    manipulator.translateX(-0.1f);
+    camera.moveLeft(deltaTime);
   // [D] 右移動
   if (glfwGetKey(window_, GLFW_KEY_D) == GLFW_PRESS)
-    manipulator.translateX(0.1f);
+    camera.moveRight(deltaTime);
   // [W] 前へ移動
   if (glfwGetKey(window_, GLFW_KEY_W) == GLFW_PRESS)
-    manipulator.translateZ(0.1f);
+    camera.moveForward(deltaTime);
   // [S] 後ろへ移動
   if (glfwGetKey(window_, GLFW_KEY_S) == GLFW_PRESS)
-    manipulator.translateZ(-0.1f);
+    camera.moveBackward(deltaTime);
+  // [Space] 上へ移動
+  if (glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS)
+    camera.moveUp(deltaTime);
+  // [Left Shift] 下へ移動
+  if (glfwGetKey(window_, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    camera.moveDown(deltaTime);
 
   // [Z] 拡大
   if (glfwGetKey(window_, GLFW_KEY_Z) == GLFW_PRESS)
@@ -132,9 +139,9 @@ void Window::processInput(Manipulator& manipulator,
   if (glfwGetKey(window_, GLFW_KEY_V) == GLFW_PRESS)
     textureScale *= 0.99f;
 
-  // [Space] 個別回転
-  if (glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS)
-    manipulator.rotateRandomAxis(Mat4::radians(1.0f));
+  // // [Space] 個別回転
+  // if (glfwGetKey(window_, GLFW_KEY_SPACE) == GLFW_PRESS)
+  //   manipulator.rotateRandomAxis(Mat4::radians(1.0f));
 }
 
 bool  Window::shouldClose() const

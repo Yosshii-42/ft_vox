@@ -6,6 +6,7 @@
 
 #include "Common.hpp"
 #include "gl/Manipulator.hpp"
+#include "gl/Camera.hpp"
 
 class Window {
 private:
@@ -25,8 +26,8 @@ public:
   
   void  show();
   GLFWwindow* getWindow() const;
-  void  processInput(Manipulator& Manipulator,
-                     float& textureScale);
+  void  processInput(Manipulator& Manipulator, float& textureScale,
+                     Camera& camera, float deltaTime);
   bool  shouldClose() const;
   float getAspectRatio() const;
 };

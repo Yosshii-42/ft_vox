@@ -29,8 +29,8 @@ int main()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);               // 背景色   
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDisable(GL_CULL_FACE);                            // 裏面処理
-    // glEnable(GL_CULL_FACE);
+    // glDisable(GL_CULL_FACE);                            // 裏面処理
+    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
    
@@ -44,6 +44,7 @@ int main()
     
     // camera作成
     Camera  camera;
+    camera.setPosition(Vec3(16.0f, 5.0f, 16.0f));
 
     TextureArray  tex;
     tex.load({
@@ -72,12 +73,29 @@ int main()
     // input flagをインスタンス化
     Common::InputFlags  inputFlags;
     float   textureScale = 1.0f;
+    float   lastTime = glfwGetTime();
+    float   lastPrintTime = glfwGetTime();
+    int     frameCount = 0;
 
     // レンダリングループ 
     while (!window.shouldClose())
     {
+      ++frameCount;
+      double  currentTime = glfwGetTime();
+      float   deltaTime = static_cast<float>(currentTime - lastTime);
+      double  elapsed = currentTime - lastPrintTime;
+      if (elapsed >= 1.0)
+      {
+        std::cout << "Average FPS: "
+                  << frameCount / elapsed << '\n';
+
+        frameCount = 0;
+
+        lastPrintTime = currentTime;
+      }
+      lastTime = currentTime;
       // キー操作
-      window.processInput(manipulator, textureScale);
+      window.processInput(manipulator, textureScale, camera, deltaTime);
       
       // 毎フレーム画面と深度バッファをクリア
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,6 +111,7 @@ int main()
 
       // 行列
       Mat4  baseModel = manipulator.getModelMatrix();
+      // Mat4  baseModel;
       Mat4  view = camera.getViewMatrix();
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
       

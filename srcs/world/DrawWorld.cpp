@@ -46,11 +46,6 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
     }
   #endif
 
-  std::cout << "Chunk (" << coord.x << ", "
-            << coord.y << ", " << coord.z << ") "
-            << "Greedy faces: " << vertices.size() / 6
-            << '\n';
-
   ChunkMesh*  mesh = getMesh(coord);
   if (mesh != nullptr)
   {
