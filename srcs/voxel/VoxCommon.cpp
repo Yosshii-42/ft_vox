@@ -17,7 +17,7 @@ bool  operator<(const ChunkCoord& a, const ChunkCoord& b)
   return (a.x < b.x);
 }
 
-static int floorDiv(int a)
+int floorDiv(int a)
 {
   int res = a / VOXEL_CHUNK_SIZE;
 
@@ -36,7 +36,7 @@ ChunkCoord  toChunkCoord(int bx, int by, int bz)
   return (out);
 }
 
-static int positiveMod(int a)
+int positiveMod(int a)
 {
   int res = a % VOXEL_CHUNK_SIZE;
 
