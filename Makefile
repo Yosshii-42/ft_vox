@@ -16,6 +16,7 @@ CXXFLAGS	= -Wall -Wextra -Werror -std=c++17 \
 			  		-I./includes \
 			  		-I$(GLAD_DIR)/include \
 			  		-MMD -MP
+# CXXFLAGS += -DDEBUG_NORMAL_MESH
 
 CFLAGS		= -Wall -Wextra -Werror \
 			  		-I./includes \

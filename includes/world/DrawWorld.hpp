@@ -34,12 +34,32 @@ public:
   
   // block ID
   BlockID           getBlock(int bx, int by, int bz) const;
+  // get Layer
+  float getTextureLayer(BlockID id) const;
 
   // vertices作成
+  void  calcGreedyVertexUVx(const ChunkCoord& coord, std::vector<Vertex>& vertices, int face) const;
+  void  calcGreedyVertexUVy(const ChunkCoord& coord, std::vector<Vertex>& vertices, int face) const;
+  void  calcGreedyVertexUVz(const ChunkCoord& coord, std::vector<Vertex>& vertices, int face) const;
+  
+  void  addGreedyFaceNegX(std::vector<Vertex>& vertices, float x, float y, float z,
+    float w, float h, float layer) const;
+  void  addGreedyFacePosX(std::vector<Vertex>& vertices, float x, float y, float z,
+    float w, float h, float layer) const;
+  void  addGreedyFaceNegY(std::vector<Vertex>& vertices, float x, float y, float z,
+    float w, float h, float layer) const;
+  void  addGreedyFacePosY(std::vector<Vertex>& vertices, float x, float y, float z,
+    float w, float h, float layer) const;
+  void  addGreedyFaceNegZ(std::vector<Vertex>& vertices, float x, float y, float z,
+    float w, float h, float layer) const;
+  void  addGreedyFacePosZ(std::vector<Vertex>& vertices, float x, float y, float z,
+    float w, float h, float layer) const;
+  
+  // 描画
+  void  draw(Shader& shader, const Mat4& baseModel,
+    const Mat4& view, const Mat4& projection) const;
+                
   void  calcVertex(const ChunkCoord& coord, std::vector<Vertex>& vertices) const;
-  
-  float getTextureLayer(BlockID id) const;
-  
   void  addFace(std::vector<Vertex>& vertices, float x, float y, float z, int face, float layer) const;
   void  addFaceNegX(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
   void  addFacePosX(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
@@ -47,15 +67,4 @@ public:
   void  addFacePosY(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
   void  addFaceNegZ(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
   void  addFacePosZ(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
-  
-  void  calcGreedyVertex(const ChunkCoord& coord, std::vector<Vertex>& vertices, int face) const;
-  
-  void  addGreedyFaceNegY(std::vector<Vertex>& vertices, float x, float y, float z,
-                          float width, float height, float layer) const;
-  void  addGreedyFacePosY(std::vector<Vertex>& vertices, float x, float y, float z,
-                          float width, float height, float layer) const;
- 
-  // 描画
-  void  draw(Shader& shader, const Mat4& baseModel,
-             const Mat4& view, const Mat4& projection) const;
 };
