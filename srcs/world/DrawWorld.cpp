@@ -164,13 +164,22 @@ void  DrawWorld::calcGreedyVertexUVx(const ChunkCoord& coord,
         if (id == BLOCK_AIR)
           continue;
 
-        int worldX = coord.x * size + x;
-        int worldY = coord.y * size + y;
-        int worldZ = coord.z * size + z;
+        BlockID neighbor;
 
-        if (getBlock(worldX + FACE_DX[face],
-                     worldY + FACE_DY[face],
-                     worldZ + FACE_DZ[face]) == BLOCK_AIR)
+        if (face == 0 && x > 0)
+          neighbor = chunk->getBlockID(x - 1, y, z);
+        else if (face == 1 && x < size - 1)
+          neighbor = chunk->getBlockID(x + 1, y, z);
+        else
+        {
+          int worldX = coord.x * size + x;
+          int worldZ = coord.z * size + z;
+          int worldY = coord.y * size + y;
+          neighbor = getBlock(worldX + FACE_DX[face],
+                       worldY + FACE_DY[face],
+                       worldZ + FACE_DZ[face]);
+        }
+        if (neighbor == BLOCK_AIR)
           mask[y][z] = id;
       }
     }
@@ -253,13 +262,23 @@ void  DrawWorld::calcGreedyVertexUVy(const ChunkCoord& coord,
         if (id == BLOCK_AIR)
           continue;
 
-        int worldX = coord.x * size + x;
-        int worldY = coord.y * size + y;
-        int worldZ = coord.z * size + z;
+        BlockID neighbor;
 
-        if (getBlock(worldX + FACE_DX[face],
-                     worldY + FACE_DY[face],
-                     worldZ + FACE_DZ[face]) == BLOCK_AIR)
+        if (face == 2 && y > 0)
+          neighbor = chunk->getBlockID(x, y - 1, z);
+        else if (face == 3 && y < size - 1)
+          neighbor = chunk->getBlockID(x, y + 1, z);
+        else
+        {
+          int worldX = coord.x * size + x;
+          int worldY = coord.y * size + y;
+          int worldZ = coord.z * size + z;
+  
+          neighbor = getBlock(worldX + FACE_DX[face],
+                              worldY + FACE_DY[face],
+                              worldZ + FACE_DZ[face]);
+        }
+        if (neighbor == BLOCK_AIR)
           mask[z][x] = id;
       }
     }
@@ -331,7 +350,7 @@ void  DrawWorld::calcGreedyVertexUVz(const ChunkCoord& coord,
   {
     BlockID mask[VOXEL_CHUNK_SIZE][VOXEL_CHUNK_SIZE];
 
-    // x面 見えているブロックを記録
+    // z面 見えているブロックを記録
     for (int y = 0; y < size; ++y)
     {
       for (int x = 0; x < size; ++x)
@@ -342,13 +361,23 @@ void  DrawWorld::calcGreedyVertexUVz(const ChunkCoord& coord,
         if (id == BLOCK_AIR)
           continue;
 
-        int worldX = coord.x * size + x;
-        int worldY = coord.y * size + y;
-        int worldZ = coord.z * size + z;
+        BlockID neighbor;
 
-        if (getBlock(worldX + FACE_DX[face],
-                     worldY + FACE_DY[face],
-                     worldZ + FACE_DZ[face]) == BLOCK_AIR)
+        if (face == 4 && z > 0)
+          neighbor = chunk->getBlockID(x, y, z - 1);
+        else if (face == 5 && z < size - 1)
+          neighbor = chunk->getBlockID(x, y, z + 1);
+        else
+        {
+          int worldX = coord.x * size + x;
+          int worldY = coord.y * size + y;
+          int worldZ = coord.z * size + z;
+  
+          neighbor = getBlock(worldX + FACE_DX[face],
+                              worldY + FACE_DY[face],
+                              worldZ + FACE_DZ[face]);
+        }
+        if (neighbor == BLOCK_AIR)
           mask[y][x] = id;
       }
     }
