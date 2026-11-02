@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <limits>
 
 #include "gl/Shader.hpp"
 #include "gl/Window.hpp"
@@ -62,12 +63,10 @@ int main()
 
     world.loadAround(cx, cz, generator);
 
-    // world.buildAllMeshes();
-    
-    // input flagをインスタンス化
-    // Common::InputFlags  inputFlags;
     float   textureScale = 1.0f;
     float   lastTime = glfwGetTime();
+    int   lastCx = std::numeric_limits<int>::max();
+    int   lastCz = std::numeric_limits<int>::max();
 
     // レンダリングループ 
     while (!window.shouldClose())
@@ -80,13 +79,14 @@ int main()
       int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
       int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
       
-      // double  start = glfwGetTime();
-      world.loadAround(cx, cz, generator);
-      world.unloadFarChunks(cx, cz);
+      if (cx != lastCx || cz != lastCz)
+      {
+        world.loadAround(cx, cz, generator);
+        world.unloadFarChunks(cx, cz);
 
-      // double  elapsed = (glfwGetTime() - start) * 1000.0;
-      // if (elapsed > 1.0)
-      //   std::cout << "Chunk loading: " << elapsed << "ms" << std::endl;
+        lastCx = cx;
+        lastCz = cz;
+      }
 
       glfwPollEvents();
 
