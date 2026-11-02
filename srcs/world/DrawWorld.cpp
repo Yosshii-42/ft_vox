@@ -32,9 +32,7 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
 {
   if (getChunk(coord) == nullptr)
     return;
-
-  double  start = glfwGetTime();
-
+    
   std::vector<Vertex> vertices;
 
   #ifdef DEBUG_NORMAL_MESH
@@ -51,30 +49,17 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
     }
   #endif
 
-  double  meshTime = (glfwGetTime() - start) * 1000.0;
-
   ChunkMesh*  mesh = getMesh(coord);
   if (mesh != nullptr)
   {
-    double uploadStart = glfwGetTime();
     mesh->upload(vertices); // ->GPU
-    double uploadTime = (glfwGetTime() - uploadStart) * 1000.0;
-    std::cout << "Update mesh: "
-              << meshTime << " ms, upload time: "
-              << uploadTime << '\n';    
     return;
   }
 
   auto  newMesh = std::make_unique<ChunkMesh>();
 
-  double  uploadStart = glfwGetTime();
   newMesh->upload(vertices);  // ->GPU
-  double  uploadTime = (glfwGetTime() - uploadStart) * 1000.0;
   addMesh(coord, std::move(newMesh));
-
-  std::cout << "New mesh: "
-            << meshTime << " ms, upload time: "
-            << uploadTime << '\n';
 }
 
 void  DrawWorld::buildAllMeshes()
@@ -538,11 +523,6 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
         generator.generateChunk(cx, cy, cz, chunk);
         addChunk(coord, chunk);
 
-        // std::cout << "Generated chunk: "
-        //           << cx << ", "
-        //           << cy << ", "
-        //           << cz << '\n';
-
         // メッシュの新規生成・再構築が必要なチャンク
         dirtyChunks.insert(coord);
 
@@ -564,20 +544,8 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
     }
   }
 
-  // double  meshStart = glfwGetTime();
-
   for (const ChunkCoord& coord : dirtyChunks)
-    buildMesh(coord);
-  
-  // double  meshTime = (glfwGetTime() - meshStart) * 1000.0;
-
-  // if (!dirtyChunks.empty())
-  // {
-  //   std::cout << "Mesh build: "
-  //             << meshTime << " ms, chunks: "
-  //             << dirtyChunks.size() << '\n';
-  // }    
-
+    buildMesh(coord);   
 }
 
 void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
