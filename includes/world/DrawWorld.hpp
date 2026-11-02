@@ -57,7 +57,7 @@ public:
 
   //
   void  loadAround(int centerCx, int centerCz, TerrainGenerator& generator);
-    
+  void  unloadFarChunks(int centerCx, int centerCz);  
 
   // 描画
   void  draw(Shader& shader, const Mat4& baseModel,

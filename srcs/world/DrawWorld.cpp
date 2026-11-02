@@ -551,6 +551,25 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
 
 }
 
+void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
+{
+  const int renderRadius = 2;
+
+  for (auto it = chunks_.begin(); it != chunks_.end();)
+  {
+    const ChunkCoord& coord = it->first;
+
+    if (std::abs(centerCx - coord.x) > renderRadius ||
+        std::abs(centerCz - coord.z) > renderRadius)
+    {
+      meshes_.erase(coord);
+      it = chunks_.erase(it);
+    }
+    else
+      ++it;
+  }
+}
+
 // 描画
 void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
                       const Mat4& view, const Mat4& projection,
