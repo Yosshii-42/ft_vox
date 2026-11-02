@@ -13,6 +13,7 @@ GLAD_FILE	= $(GLAD_DIR)/src/glad.c
 STB_FILE	= $(STB_DIR)/stb_image.h
 
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++17 \
+						-O2 \
 			  		-I./includes \
 			  		-I$(GLAD_DIR)/include \
 			  		-MMD -MP
