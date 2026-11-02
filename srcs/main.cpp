@@ -61,7 +61,8 @@ int main()
     int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
 
     world.loadAround(cx, cz, generator);
-    world.buildAllMeshes();
+
+    // world.buildAllMeshes();
     
     // input flagをインスタンス化
     // Common::InputFlags  inputFlags;
@@ -81,6 +82,8 @@ int main()
       
       // double  start = glfwGetTime();
       world.loadAround(cx, cz, generator);
+      world.unloadFarChunks(cx, cz);
+
       // double  elapsed = (glfwGetTime() - start) * 1000.0;
       // if (elapsed > 1.0)
       //   std::cout << "Chunk loading: " << elapsed << "ms" << std::endl;
@@ -108,7 +111,7 @@ int main()
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
       
       // 描画
-      world.draw(shader, baseModel, view, projection);
+      world.draw(shader, baseModel, view, projection, cx, cz);
 
       // 十字表示
       glDisable(GL_DEPTH_TEST);

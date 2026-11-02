@@ -509,11 +509,12 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
         generator.generateChunk(cx, cy, cz, chunk);
         addChunk(coord, chunk);
 
-        std::cout << "Generated chunk: "
-                  << cx << ", "
-                  << cy << ", "
-                  << cz << '\n';
+        // std::cout << "Generated chunk: "
+        //           << cx << ", "
+        //           << cy << ", "
+        //           << cz << '\n';
 
+        // メッシュの新規生成・再構築が必要なチャンク
         dirtyChunks.insert(coord);
 
         const ChunkCoord  neighbors[] = {
@@ -550,20 +551,50 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
 
 }
 
+void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
+{
+  const int renderRadius = 2;
+
+  for (auto it = chunks_.begin(); it != chunks_.end();)
+  {
+    const ChunkCoord& coord = it->first;
+
+    if (std::abs(centerCx - coord.x) > renderRadius ||
+        std::abs(centerCz - coord.z) > renderRadius)
+    {
+      meshes_.erase(coord);
+      it = chunks_.erase(it);
+    }
+    else
+      ++it;
+  }
+}
+
 // 描画
 void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
-                      const Mat4& view, const Mat4& projection) const
+                      const Mat4& view, const Mat4& projection,
+                      int centerCx, int centerCz) const
 {
+  const int renderRadius = 1;
+  
   for (const auto& entry : meshes_)
   {
     const ChunkCoord&  coord = entry.first;
+  
+    // カメラから離れたチャンクは描画しない
+    if (std::abs(centerCx - coord.x) > renderRadius ||
+        std::abs(centerCz - coord.z) > renderRadius)
+      continue;
+
     const ChunkMesh*   mesh = entry.second.get();
     if (mesh == nullptr)
       continue;
 
-    Mat4  model = baseModel * Mat4::translate(coord.x * VOXEL_CHUNK_SIZE,
-                                              coord.y * VOXEL_CHUNK_SIZE,
-                                              coord.z * VOXEL_CHUNK_SIZE);
+    Mat4  model = baseModel * Mat4::translate(
+      coord.x * VOXEL_CHUNK_SIZE,
+      coord.y * VOXEL_CHUNK_SIZE,
+      coord.z * VOXEL_CHUNK_SIZE);
+
     shader.setMatrices(model, view, projection);
     mesh->draw();
   }
