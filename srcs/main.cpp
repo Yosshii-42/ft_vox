@@ -108,7 +108,7 @@ int main()
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
       
       // 描画
-      world.draw(shader, baseModel, view, projection);
+      world.draw(shader, baseModel, view, projection, cx, cz);
 
       // 十字表示
       glDisable(GL_DEPTH_TEST);

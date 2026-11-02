@@ -61,7 +61,8 @@ public:
 
   // 描画
   void  draw(Shader& shader, const Mat4& baseModel,
-    const Mat4& view, const Mat4& projection) const;
+             const Mat4& view, const Mat4& projection,
+             int centerCx, int centerCz) const;
 
   // 旧Vertices作成
   void  calcVertex(const ChunkCoord& coord, std::vector<Vertex>& vertices) const;
