@@ -502,16 +502,15 @@ void  DrawWorld::addGreedyFacePosZ(std::vector<Vertex>& vertices,
 
 void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& generator)
 {
-  const int radius = 1;
   const int heightChunks = 4;
 
   std::set<ChunkCoord>  dirtyChunks;
 
   for (int cy = 0; cy < heightChunks; ++cy)
   {
-    for (int cz = centerCz - radius; cz <= centerCz + radius; ++cz)
+    for (int cz = centerCz - RENDER_RADIUS; cz <= centerCz + RENDER_RADIUS; ++cz)
     {
-      for (int cx = centerCx - radius; cx <= centerCx + radius; ++cx)
+      for (int cx = centerCx - RENDER_RADIUS; cx <= centerCx + RENDER_RADIUS; ++cx)
       {
         ChunkCoord  coord{cx, cy, cz};
 
@@ -551,14 +550,12 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
 
 void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
 {
-  const int renderRadius = 2;
-
   for (auto it = chunks_.begin(); it != chunks_.end();)
   {
     const ChunkCoord& coord = it->first;
 
-    if (std::abs(centerCx - coord.x) > renderRadius ||
-        std::abs(centerCz - coord.z) > renderRadius)
+    if (std::abs(centerCx - coord.x) > UNLOAD_RADIUS ||
+        std::abs(centerCz - coord.z) > UNLOAD_RADIUS)
     {
       meshes_.erase(coord);
       it = chunks_.erase(it);
@@ -573,7 +570,9 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
                       const Mat4& view, const Mat4& projection,
                       int centerCx, int centerCz) const
 {
-  const int renderRadius = 1;
+  // int candidates = 0;
+  // int culled = 0;
+  // int drawn = 0;
   const Frustum frustum(view, projection);
 
   for (const auto& entry : meshes_)
@@ -581,13 +580,15 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
     const ChunkCoord&  coord = entry.first;
   
     // カメラから離れたチャンクは描画しない
-    if (std::abs(centerCx - coord.x) > renderRadius ||
-        std::abs(centerCz - coord.z) > renderRadius)
+    if (std::abs(centerCx - coord.x) > RENDER_RADIUS ||
+        std::abs(centerCz - coord.z) > RENDER_RADIUS)
       continue;
 
     const ChunkMesh*   mesh = entry.second.get();
     if (mesh == nullptr)
       continue;
+
+    // ++candidates;
 
     const Vec3  min(coord.x * VOXEL_CHUNK_SIZE,
                     coord.y * VOXEL_CHUNK_SIZE,
@@ -597,7 +598,10 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
                     min.z + VOXEL_CHUNK_SIZE);
 
     if (!frustum.intersectsAABB(min, max))
+    {
+      // ++culled;
       continue;
+    }
 
     Mat4  model = baseModel * Mat4::translate(
       coord.x * VOXEL_CHUNK_SIZE,
@@ -606,7 +610,12 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
 
     shader.setMatrices(model, view, projection);
     mesh->draw();
+    // ++drawn;
   }
+  // std::cout << "\rCandidates: " << candidates
+  //           << " | Culled: " << culled
+  //           << " | Drawn: " << drawn
+  //           << std::flush;
 }
 
 // 古いコード
