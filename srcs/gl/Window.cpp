@@ -36,6 +36,7 @@ glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
     throw std::runtime_error("Failed to create GLFW window");
 	}
 	glfwMakeContextCurrent(window_);
+  glfwSwapInterval(1);
   glfwSetWindowUserPointer(window_, this);
   glfwSetFramebufferSizeCallback(window_, Window::framebufferSizeCallback);
   glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // マウスの移動量取得

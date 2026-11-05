@@ -16,6 +16,9 @@ private:
   std::map<ChunkCoord, std::unique_ptr<ChunkMesh>> meshes_;
 
 public:
+  static constexpr int  RENDER_RADIUS = 5;
+  static constexpr int  UNLOAD_RADIUS = RENDER_RADIUS + 1;
+
   DrawWorld();
   ~DrawWorld();
   DrawWorld(const DrawWorld& other) = delete;

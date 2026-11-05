@@ -3,8 +3,8 @@
 #include <iostream>
 
 Camera::Camera()
-  : yaw_(0.0f),
-    pitch_(0.0f),
+  : yaw_(-90.0f),
+    pitch_(-20.0f),
     fov_(Common::CAMERA_FOV),
     near_(Common::CAMERA_NEAR),
     far_(Common::CAMERA_FAR)
