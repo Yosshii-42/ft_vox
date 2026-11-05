@@ -36,6 +36,8 @@ public:
   Vec4  operator*(const Vec4& right) const;
   Mat4& operator*=(const Mat4& right);
 
+  float getM(int row, int col) const;
+
   // overload
   friend std::ostream& operator<<(std::ostream& out, const Mat4& mat);
 };

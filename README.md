@@ -217,6 +217,7 @@ The object can be manipulated using the following keyboard controls:
 - [mktemp, trap usage](https://www.linuxmaster.jp/linux_skill/2026/05/mktemp.html)
 - [std::array<>](https://cpprefjp.github.io/reference/array/array.html)
 - [Texture sample](https://minecraftjapan.miraheze.org/wiki/)
+- [Frustum Culling](https://learnopengl.com/Guest-Articles/2021/Scene/Frustum-Culling)
 
 ## AI Usage
 

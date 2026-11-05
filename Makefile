@@ -49,6 +49,7 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/math/Vec2.cpp \
 				srcs/math/Vec3.cpp \
 				srcs/math/Vec4.cpp \
+				srcs/math/Frustum.cpp \
 				srcs/voxel/ChunkMesh.cpp \
 				srcs/voxel/ChunkData.cpp \
 				srcs/voxel/VoxCommon.cpp \
