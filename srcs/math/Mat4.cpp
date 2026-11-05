@@ -201,6 +201,11 @@ Mat4& Mat4::operator*=(const Mat4& right)
   return *this;
 }
 
+float Mat4::getM(int row, int col) const
+{
+  return (m_[row][col]);
+}
+
 // overload
 std::ostream& operator<<(std::ostream& out, const Mat4& mat) {
   out << mat.m_[0][0] << " "

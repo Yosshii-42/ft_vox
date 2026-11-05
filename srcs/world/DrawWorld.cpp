@@ -1,7 +1,8 @@
 #include "world/DrawWorld.hpp"
+#include "world/TerrainGenerator.hpp"
 #include "voxel/VoxCommon.hpp"
 #include "voxel/ChunkMesh.hpp"
-#include "world/TerrainGenerator.hpp"
+#include "math/Frustum.hpp"
 #include <set>
 #include <GLFW/glfw3.h>
 
@@ -605,7 +606,8 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
                       int centerCx, int centerCz) const
 {
   const int renderRadius = 1;
-  
+  const Frustum frustum(view, projection);
+
   for (const auto& entry : meshes_)
   {
     const ChunkCoord&  coord = entry.first;
@@ -617,6 +619,16 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
 
     const ChunkMesh*   mesh = entry.second.get();
     if (mesh == nullptr)
+      continue;
+
+    const Vec3  min(coord.x * VOXEL_CHUNK_SIZE,
+                    coord.y * VOXEL_CHUNK_SIZE,
+                    coord.z * VOXEL_CHUNK_SIZE);
+    const Vec3  max(min.x + VOXEL_CHUNK_SIZE,
+                    min.y + VOXEL_CHUNK_SIZE,
+                    min.z + VOXEL_CHUNK_SIZE);
+
+    if (!frustum.intersectsAABB(min, max))
       continue;
 
     Mat4  model = baseModel * Mat4::translate(
