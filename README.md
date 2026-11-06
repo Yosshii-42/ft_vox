@@ -1,6 +1,6 @@
-*This project has been created as part of the 42 curriculum by yotsurud.*
+*This project has been created as part of the 42 curriculum by yotsurud, and tobaba.*
 
-# SCOP
+# ft_vox
 
 ## Overview
 - [Description](#description)
@@ -99,81 +99,67 @@ The project is organized into modules based on their responsibilities.
 - `validate/`: Mesh geometry diagnostics
 - `utils/`: Utility functions
 ```bash
-    .
-    ├── img
-    ├── includes
-    │   ├── gl
-    │   ├── glad        # Automatically generated during build
-    │   │   ├── include
-    │   │   └── src
-    │   ├── math
-    │   ├── parser
-    │   ├── utils
-    │   └── validate
-    ├── resources
-    ├── shaders
-    ├── srcs
-    │   ├── gl
-    │   ├── math
-    │   ├── parser
-    │   ├── utils
-    │   └── validate
-    ├── install_glad.sh
-    └── Makefile 
+.
+├── Makefile
+├── README.md
+├── includes
+│   ├── Common.hpp
+│   ├── gl
+│   │   ├── Camera.hpp
+│   │   ├── Crosshair.hpp
+│   │   ├── Manipulator.hpp
+│   │   ├── Shader.hpp
+│   │   ├── TextureArray.hpp
+│   │   └── Window.hpp
+│   ├── glad
+│   ├── math
+│   │   ├── Mat4.hpp
+│   │   ├── Vec2.hpp
+│   │   ├── Vec3.hpp
+│   │   └── Vec4.hpp
+│   ├── stb
+│   ├── voxel
+│   │   ├── ChunkData.hpp
+│   │   ├── ChunkMesh.hpp
+│   │   └── VoxCommon.hpp
+│   └── world
+│       ├── DrawWorld.hpp
+│       └── TerrainGenerator.hpp
+├── scripts
+│   ├── install_glad.sh
+│   └── install_stb.sh
+├── shaders
+│   ├── crosshair.frag
+│   ├── crosshair.vert
+│   ├── fragment.glsl
+│   └── vertex.glsl
+├── srcs
+└── textures
 ```
 
 ## Main features
 
 ### Mandatory
-- Custom OBJ file parser
-- Custom 24-bit BMP image loader
 - OpenGL 3.3 Core Profile rendering
 - Model, view, and projection transformations
 - Perspective projection with aspect-ratio correction
 - Depth testing
-- Grayscale face coloring
 - Texture mapping
-- Smooth transition between grayscale and textured rendering using GLSL `mix()`
 - Load and apply image textures using OpenGL
 - Object rotation, translation, and scaling using keyboard controls
 - GLSL vertex and fragment shaders
 
-### Bonus: Complex Polygon Handling
-This project supports triangulation of concave polygons using the Ear Clipping algorithm.
-For non-coplanar polygons, Newell's Method is used to estimate a representative normal vector and select an appropriate 2D projection plane. Ear Clipping is then performed on the projected vertices, while the original 3D coordinates are preserved for rendering.
-- Ear Clipping triangulation for concave polygons
-- Non-coplanar polygon handling using Newell's Method for projection-plane selection
-- Triangle Fan triangulation for comparison and demonstration
+### Bonus: 
 
-### Bonus: Texture Mapping
-This project supports automatic UV coordinate generation using two mapping methods:
-- **Axis-based mapping**: Projects texture coordinates onto the XY, XZ, or YZ plane according to the face orientation.
-- **Normal-based mapping**: Uses each face's normal vector to construct a local projection basis for UV coordinates.
 
-- Switch between mapping methods and adjust texture repetition using keyboard controls.
+### Bonus: 
 
-Controls:
-- T: Toggle texture mapping on / off
-- C: Increase texture repetition
-- V: Decrease texture repetition
-- M: Switch between axis-based and normal-based UV mapping
 
-### Bonus: Magic Pocket
-Press P to add a new instance of the loaded object with a randomized position, scale, and rotation axis.
+### Bonus: 
 
-- P: Add a new object instance
-- K: Remove all added instances, keeping the first instance
-- SPACE: Rotate each instance around its own randomly assigned axis
-
-All instances share the same mesh data (VAO/VBO), avoiding duplicate GPU mesh uploads.
 
 ### Additional Feature: Mesh Diagnostics
-- Degenerate Triangle Detection
-- Face Winding Validation
-- Geometric Edge Analysis
-- Zero-Length Edge Detection
-- Triangle Shape Analysis
-- Non-Coplanar Face Detection
+
 
 ### Demonstration
 
@@ -194,15 +180,12 @@ The object can be manipulated using the following keyboard controls:
 
 | Key | Action |
 |---|---|
-| `←` / `→` | Rotate around the Y-axis |
-| `↑` / `↓` | Rotate around the X-axis |
-| `Q` / `E` | Rotate around the Z-axis |
+| `←` / `→` | Turn left and right |
+| `↑` / `↓` | Turn up and down |
 | `A` / `D` | Move along the X-axis |
-| `R` / `F` | Move along the Y-axis |
 | `W` / `S` | Move along the Z-axis |
-| `Z` / `X` | Scale the object up / down |
+| `SPACE` / `RIGHT SHIFT` | Move along the Y-axis |
 | `C` / `V` | Increase / decrease texture repetition |
-| `SPACE` | Rotate each instance around its own randomly assigned axis |
 | `ESC` | Close the window |
 
 ## Resources

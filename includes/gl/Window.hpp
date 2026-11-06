@@ -31,6 +31,8 @@ public:
   void  show();
   GLFWwindow* getWindow() const;
   void  processInput(float& textureScale, Camera& camera, float deltaTime);
+  void  tabJudge();
+  void  mouseOperate(Camera& camera);
   bool  shouldClose() const;
   float getAspectRatio() const;
 };
