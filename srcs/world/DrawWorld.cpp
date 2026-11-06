@@ -10,6 +10,45 @@ DrawWorld::DrawWorld() {}
 
 DrawWorld::~DrawWorld() {}
 
+// block: bx,by,bzはワールド座標
+void  DrawWorld::setBlock(int bx, int by, int bz, BlockID id)
+{
+  ChunkCoord  coord = toChunkCoord(bx, by, bz);
+  ChunkData*  chunk = getMutableChunk(coord);
+
+  if (chunk == nullptr)
+    return;
+
+  LocalCoord  local = toLocalCoord(bx, by, bz);
+  if (chunk->getBlockID(local.x, local.y, local.z) == id)
+    return;
+
+  chunk->setBlock(local.x, local.y, local.z, id);
+  buildMesh(coord);
+
+  // ブロックがチャンク境界にある場合、隣接チャンクのメッシュを再生成する
+
+  // x方向
+  if (local.x == 0)
+    buildMesh({coord.x - 1, coord.y, coord.z});
+  else if (local.x == VOXEL_CHUNK_SIZE - 1)
+    buildMesh({coord.x + 1, coord.y, coord.z});
+
+  // y方向
+  if (local.y == 0)
+    buildMesh({coord.x, coord.y - 1, coord.z});
+  else if (local.y == VOXEL_CHUNK_SIZE - 1)
+    buildMesh({coord.x, coord.y + 1, coord.z});
+
+  // z方向
+  if (local.z == 0)
+    buildMesh({coord.x, coord.y, coord.z - 1});
+  else if (local.z == VOXEL_CHUNK_SIZE - 1)
+    buildMesh({coord.x, coord.y, coord.z + 1});
+}
+
+
+// chunk
 void  DrawWorld::addChunk(const ChunkCoord& coord, const ChunkData& chunk)
 {
   if (chunks_.find(coord) != chunks_.end())
@@ -28,7 +67,17 @@ const ChunkData*  DrawWorld::getChunk(const ChunkCoord& coord) const
   return it->second.get();
 }
 
-// upload()はメインスレッドで呼び出す
+ChunkData*  DrawWorld::getMutableChunk(const ChunkCoord& coord)
+{
+  auto it = chunks_.find(coord);
+
+  if (it == chunks_.end())
+    return nullptr;
+
+  return it->second.get();
+}
+
+// mesh upload()はメインスレッドで呼び出す
 void  DrawWorld::buildMesh(const ChunkCoord& coord)
 {
   if (getChunk(coord) == nullptr)
@@ -54,12 +103,20 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
   if (mesh != nullptr)
   {
     mesh->upload(vertices); // ->GPU
-    return;
   }
-  auto  newMesh = std::make_unique<ChunkMesh>();
-
-  newMesh->upload(vertices);  // ->GPU
-  addMesh(coord, std::move(newMesh));
+  else
+  {
+    auto  newMesh = std::make_unique<ChunkMesh>();
+  
+    newMesh->upload(vertices);  // ->GPU
+    addMesh(coord, std::move(newMesh));
+  }
+  std::cout << "Chunk ("
+            << coord.x << ", "
+            << coord.y << ", "
+            << coord.z << ") : "
+            << vertices.size() / 6
+            << " faces" << '\n';
 }
 
 void  DrawWorld::buildAllMeshes()
@@ -603,6 +660,41 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
     mesh->draw();
   }
 }
+
+void  DrawWorld::testChunkBoundary(TerrainGenerator& generator)
+{
+  ChunkCoord  coordA{0, 0, 0};
+  ChunkCoord  coordB{-1, 0, 0};
+  ChunkCoord  coordC{0, -1, 0};
+  ChunkCoord  coordD{0, 0, -1};
+
+  ChunkData chunkA;
+  ChunkData chunkB;
+  ChunkData chunkC;
+  ChunkData chunkD;
+
+  generator.generateChunk(0, 0, 0, chunkA);
+  generator.generateChunk(-1, 0, 0, chunkB);
+  generator.generateChunk(0, -1, 0, chunkC);
+  generator.generateChunk(0, 0, -1, chunkD);
+
+  addChunk(coordA, chunkA);
+  addChunk(coordB, chunkB);
+  addChunk(coordC, chunkC);
+  addChunk(coordD, chunkD);
+
+  buildMesh(coordA);
+  buildMesh(coordB);
+  buildMesh(coordC);
+  buildMesh(coordD);
+
+  std::cout << "--- Remove boundary block ---" << std::endl;
+  setBlock(0, 0, 0, BLOCK_AIR);
+
+  std::cout << "--- Restore boudary block ---" << std::endl;
+  setBlock(0, 0, 0, BLOCK_STONE);
+}
+
 
 // 古いコード
 void  DrawWorld::calcVertex(const ChunkCoord& coord,

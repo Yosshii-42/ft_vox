@@ -24,9 +24,13 @@ public:
   DrawWorld(const DrawWorld& other) = delete;
   DrawWorld& operator=(const DrawWorld& other) = delete;
 
+  // block
+  void              setBlock(int bx, int by, int bz, BlockID id);
+
   // chunk
   void              addChunk(const ChunkCoord& coord, const ChunkData& chunk);
   const ChunkData*  getChunk(const ChunkCoord& coord) const;
+  ChunkData*        getMutableChunk(const ChunkCoord& coord);
   
   // mesh
   void              buildMesh(const ChunkCoord& cood);
@@ -66,6 +70,8 @@ public:
   void  draw(Shader& shader, const Mat4& baseModel,
              const Mat4& view, const Mat4& projection,
              int centerCx, int centerCz) const;
+
+  void  testChunkBoundary(TerrainGenerator& generator);
 
   // 旧Vertices作成
   void  calcVertex(const ChunkCoord& coord, std::vector<Vertex>& vertices) const;
