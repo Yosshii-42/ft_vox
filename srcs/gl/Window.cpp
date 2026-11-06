@@ -1,6 +1,7 @@
 #include "gl/Window.hpp"
 #include "Common.hpp"
 #include "gl/Camera.hpp"
+#include <stdexcept>
 
 Window::Window()
  : window_(NULL),
@@ -121,6 +122,15 @@ void Window::processInput(float& textureScale, Camera& camera, float deltaTime)
     textureScale *= 0.99f;
 
   // tab判定
+  tabJudge();
+
+  // マウス操作
+  mouseOperate(camera);
+}
+
+// tab判定
+void  Window::tabJudge()
+{
   bool  tabDown = glfwGetKey(window_, GLFW_KEY_TAB) == GLFW_PRESS;
   if (tabDown && !tabPressed_)
   {
@@ -129,9 +139,12 @@ void Window::processInput(float& textureScale, Camera& camera, float deltaTime)
                      mouseCaputured_ ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
     firstMouse_ = true;
   }
-  tabPressed_ = tabDown;
+  tabPressed_ = tabDown;  
+}
 
-  // マウス操作
+// マウス操作
+void  Window::mouseOperate(Camera& camera)
+{
   double  mouseX;
   double  mouseY;
 

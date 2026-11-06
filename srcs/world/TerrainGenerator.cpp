@@ -12,8 +12,6 @@ TerrainGenerator::TerrainGenerator(Seed seed)
 
 void  TerrainGenerator::generateChunk(int cx, int cy, int cz, ChunkData& chunk)
 {
-  (void)cz;
-  // (void)cx;
   for (int y = 0; y < VOXEL_CHUNK_SIZE; ++y)
   {
     int worldY = cy * VOXEL_CHUNK_SIZE + y;
@@ -24,7 +22,9 @@ void  TerrainGenerator::generateChunk(int cx, int cy, int cz, ChunkData& chunk)
       {
         BlockID id = BLOCK_AIR;
         int worldX = cx * VOXEL_CHUNK_SIZE + x;
-        int groundHeight = 4 + (worldX / 2);
+        int groundHeight = 4 +
+                           static_cast<int>(
+                            std::floor(static_cast<double>(worldX) / 2));
 
         if (worldY == 0)
           id = BLOCK_BEDROCK;

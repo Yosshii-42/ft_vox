@@ -68,9 +68,6 @@ int main()
     int   lastCx = std::numeric_limits<int>::max();
     int   lastCz = std::numeric_limits<int>::max();
 
-    double  fpsLastTime = glfwGetTime();
-    int     frameCount = 0;
-
     // レンダリングループ 
     while (!window.shouldClose())
     {
@@ -123,21 +120,6 @@ int main()
 
       // swap buffers and poll IO events
       glfwSwapBuffers(window.getWindow());
-
-      // FPS計測
-      ++frameCount;
-
-      double elapsed = glfwGetTime() - fpsLastTime;
-
-      if (elapsed >= 1.0)
-      {
-        double fps = frameCount / elapsed;
-
-        std::cout << "FPS: " << fps << '\n';
-
-        frameCount = 0;
-        fpsLastTime = glfwGetTime();
-      }
     }
   }
   catch(const std::exception& e)

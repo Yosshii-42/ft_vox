@@ -56,7 +56,6 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
     mesh->upload(vertices); // ->GPU
     return;
   }
-
   auto  newMesh = std::make_unique<ChunkMesh>();
 
   newMesh->upload(vertices);  // ->GPU
@@ -570,9 +569,6 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
                       const Mat4& view, const Mat4& projection,
                       int centerCx, int centerCz) const
 {
-  // int candidates = 0;
-  // int culled = 0;
-  // int drawn = 0;
   const Frustum frustum(view, projection);
 
   for (const auto& entry : meshes_)
@@ -588,8 +584,6 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
     if (mesh == nullptr)
       continue;
 
-    // ++candidates;
-
     const Vec3  min(coord.x * VOXEL_CHUNK_SIZE,
                     coord.y * VOXEL_CHUNK_SIZE,
                     coord.z * VOXEL_CHUNK_SIZE);
@@ -598,10 +592,7 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
                     min.z + VOXEL_CHUNK_SIZE);
 
     if (!frustum.intersectsAABB(min, max))
-    {
-      // ++culled;
       continue;
-    }
 
     Mat4  model = baseModel * Mat4::translate(
       coord.x * VOXEL_CHUNK_SIZE,
@@ -610,12 +601,7 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
 
     shader.setMatrices(model, view, projection);
     mesh->draw();
-    // ++drawn;
   }
-  // std::cout << "\rCandidates: " << candidates
-  //           << " | Culled: " << culled
-  //           << " | Drawn: " << drawn
-  //           << std::flush;
 }
 
 // 古いコード
