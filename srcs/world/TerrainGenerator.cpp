@@ -12,6 +12,22 @@ TerrainGenerator::TerrainGenerator(Seed seed)
 
 void  TerrainGenerator::generateChunk(int cx, int cy, int cz, ChunkData& chunk)
 {
+#ifdef DEBUG_CHUNK_BOUNDARY
+  (void)cx;
+  (void)cy;
+  (void)cz;
+  for (int y = 0; y < VOXEL_CHUNK_SIZE; ++y)
+  {
+    for (int z = 0; z < VOXEL_CHUNK_SIZE; ++z)
+    {
+      for (int x = 0; x < VOXEL_CHUNK_SIZE; ++x)
+      {
+        chunk.setBlock(x, y, z, BLOCK_STONE);
+      }
+    }
+  }
+  return;
+#else
   for (int y = 0; y < VOXEL_CHUNK_SIZE; ++y)
   {
     int worldY = cy * VOXEL_CHUNK_SIZE + y;
@@ -44,4 +60,5 @@ void  TerrainGenerator::generateChunk(int cx, int cy, int cz, ChunkData& chunk)
       }
     }
   }
+#endif
 }
