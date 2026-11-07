@@ -11,6 +11,8 @@ ChunkMesh::~ChunkMesh() {
 
 void  ChunkMesh::upload(const std::vector<Vertex>& vertices)
 {
+  const bool initializeVAO = (VAO_ == 0);
+
   if (VAO_ == 0)
     glGenVertexArrays(1, &VAO_);
   if (VBO_ == 0)
@@ -19,30 +21,46 @@ void  ChunkMesh::upload(const std::vector<Vertex>& vertices)
   glBindVertexArray(VAO_);
   glBindBuffer(GL_ARRAY_BUFFER, VBO_);
 
-  glBufferData(GL_ARRAY_BUFFER,
-               vertices.size() * sizeof(Vertex),
-               vertices.data(),
-               GL_STATIC_DRAW);
-  
-  // position location = 0
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(offsetof(Vertex, x)));
-  glEnableVertexAttribArray(0);
+  const size_t  dataSize = vertices.size() * sizeof(Vertex);
 
-  // uv location = 1
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(offsetof(Vertex, u)));
-  glEnableVertexAttribArray(1);
+  if (dataSize > bufferCapacity_)
+  {
+    glBufferData(GL_ARRAY_BUFFER,
+      dataSize,
+      vertices.data(),
+      GL_DYNAMIC_DRAW);
+    bufferCapacity_ = dataSize;
+  }
+  else if (dataSize > 0)
+  {
+    glBufferSubData(GL_ARRAY_BUFFER,
+                    0,
+                    dataSize,
+                    vertices.data());
+  }
 
-  // layer location = 2
-  glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(offsetof(Vertex, layer)));
-  glEnableVertexAttribArray(2);
+  if (initializeVAO)
+  {
+    // position location = 0
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          reinterpret_cast<void*>(offsetof(Vertex, x)));
+    glEnableVertexAttribArray(0);
 
-  // face location = 3
-  glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        reinterpret_cast<void*>(offsetof(Vertex, face)));
-  glEnableVertexAttribArray(3);
+    // uv location = 1
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          reinterpret_cast<void*>(offsetof(Vertex, u)));
+    glEnableVertexAttribArray(1);
+
+    // layer location = 2
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          reinterpret_cast<void*>(offsetof(Vertex, layer)));
+    glEnableVertexAttribArray(2);
+
+    // face location = 3
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          reinterpret_cast<void*>(offsetof(Vertex, face)));
+    glEnableVertexAttribArray(3);
+  }
 
   // unbind
   glBindBuffer(GL_ARRAY_BUFFER, 0);
