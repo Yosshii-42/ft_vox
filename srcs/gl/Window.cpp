@@ -76,7 +76,8 @@ GLFWwindow*  Window::getWindow() const
   return (window_);
 }
 
-void Window::processInput(float& textureScale, Camera& camera, float deltaTime)
+void Window::processInput(float& textureScale, Camera& camera,
+                          float deltaTime, DrawWorld& world)
 {
   // esc
 	if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -126,6 +127,19 @@ void Window::processInput(float& textureScale, Camera& camera, float deltaTime)
 
   // マウス操作
   mouseOperate(camera);
+
+  // 描画距離
+  // [1] Short(3チャンク)
+  if (glfwGetKey(window_, GLFW_KEY_1) == GLFW_PRESS)
+    world.setRenderRadius(3);
+
+  // [2] Medium(5チャンク)
+  if (glfwGetKey(window_, GLFW_KEY_2) == GLFW_PRESS)
+    world.setRenderRadius(5);
+
+  // [3] Long(8チャンク)
+  if (glfwGetKey(window_, GLFW_KEY_3) == GLFW_PRESS)
+    world.setRenderRadius(8);
 }
 
 // tab判定

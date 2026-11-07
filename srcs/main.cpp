@@ -66,10 +66,11 @@ int main()
       world.loadAround(cx, cz, generator);
     #endif
 
-    float   textureScale = 1.0f;
-    float   lastTime = glfwGetTime();
+    float textureScale = 1.0f;
+    float lastTime = glfwGetTime();
     int   lastCx = std::numeric_limits<int>::max();
     int   lastCz = std::numeric_limits<int>::max();
+    int   lastRenderRadius = world.getRenderRadius();
 
     // レンダリングループ 
     while (!window.shouldClose())
@@ -78,26 +79,31 @@ int main()
       float   deltaTime = static_cast<float>(currentTime - lastTime);
       lastTime = currentTime;
 
+      // ① イベントとキー入力
+      glfwPollEvents();
+      window.processInput(textureScale, camera, deltaTime, world);
+
+      // ② 変更前のカメラ位置と描画距離を取得
       const Vec3& pos = camera.getPosition();
       int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
       int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
+
+      int renderRadius = world.getRenderRadius();
       
-      if (cx != lastCx || cz != lastCz)
+      // ③ チャンクを更新
+      if (cx != lastCx || cz != lastCz || renderRadius != lastRenderRadius)
       {
-        #ifdef DEBUG_CHUNK_BOUNDARY
-        #else
+        #ifndef DEBUG_CHUNK_BOUNDARY
           world.loadAround(cx, cz, generator);
           world.unloadFarChunks(cx, cz);
         #endif
 
         lastCx = cx;
         lastCz = cz;
+        lastRenderRadius = renderRadius;
       }
 
-      glfwPollEvents();
 
-      // キー操作
-      window.processInput(textureScale, camera, deltaTime);
     
       // 更新が必要なチャンクのメッシュを再生成  
       world.updateDirtyChunks();
