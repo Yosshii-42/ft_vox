@@ -3,6 +3,7 @@
 #include "Common.hpp"
 #include "gl/Manipulator.hpp"
 #include "gl/Camera.hpp"
+#include "world/DrawWorld.hpp"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -30,7 +31,8 @@ public:
   
   void  show();
   GLFWwindow* getWindow() const;
-  void  processInput(float& textureScale, Camera& camera, float deltaTime);
+  void  processInput(float& textureScale, Camera& camera,
+                     float deltaTime, DrawWorld& world);
   void  tabJudge();
   void  mouseOperate(Camera& camera);
   bool  shouldClose() const;

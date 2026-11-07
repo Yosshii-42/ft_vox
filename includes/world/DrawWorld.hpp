@@ -15,7 +15,9 @@ class DrawWorld {
 private:
   std::map<ChunkCoord, std::unique_ptr<ChunkData>>  chunks_;
   std::map<ChunkCoord, std::unique_ptr<ChunkMesh>>  meshes_;
-  std::set<ChunkCoord>                              dirtyChunks_;
+  std::set<ChunkCoord>  dirtyChunks_;
+
+  int renderRadius_ = 5;
 
 public:
   static constexpr int  RENDER_RADIUS = 5;
@@ -25,6 +27,10 @@ public:
   ~DrawWorld();
   DrawWorld(const DrawWorld& other) = delete;
   DrawWorld& operator=(const DrawWorld& other) = delete;
+
+  // radius
+  void  setRenderRadius(int radius);
+  int   getRenderRadius() const;
 
   // block
   void              setBlock(int bx, int by, int bz, BlockID id);

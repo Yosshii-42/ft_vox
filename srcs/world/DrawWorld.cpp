@@ -10,6 +10,19 @@ DrawWorld::DrawWorld() {}
 
 DrawWorld::~DrawWorld() {}
 
+void  DrawWorld::setRenderRadius(int radius)
+{
+  if (radius < 1 || radius == renderRadius_)
+    return;
+
+  renderRadius_ = radius;
+}
+
+int DrawWorld::getRenderRadius() const
+{
+  return (renderRadius_);
+}
+
 // block: bx,by,bzはワールド座標
 void  DrawWorld::setBlock(int bx, int by, int bz, BlockID id)
 {
@@ -60,15 +73,9 @@ void  DrawWorld::updateDirtyChunks()
   std::set<ChunkCoord>  pending;
   pending.swap(dirtyChunks_); // 対象をpendingに移す
 
-  if (!pending.empty())
-    std::cout << "Dirty chunks: " << pending.size() << '\n';
-
   // pendingに登録されたチャンクのメッシュを再生成する
   for (const ChunkCoord& coord : pending)
     buildMesh(coord);
-
-  if (!pending.empty())
-    std::cout << "Remaining dirty: " << dirtyChunks_.size() << std::endl;
 }
 
 // chunk
@@ -587,9 +594,9 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
 
   for (int cy = 0; cy < heightChunks; ++cy)
   {
-    for (int cz = centerCz - RENDER_RADIUS; cz <= centerCz + RENDER_RADIUS; ++cz)
+    for (int cz = centerCz - renderRadius_; cz <= centerCz + renderRadius_; ++cz)
     {
-      for (int cx = centerCx - RENDER_RADIUS; cx <= centerCx + RENDER_RADIUS; ++cx)
+      for (int cx = centerCx - renderRadius_; cx <= centerCx + renderRadius_; ++cx)
       {
         ChunkCoord  coord{cx, cy, cz};
 
@@ -630,8 +637,8 @@ void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
   {
     const ChunkCoord& coord = it->first;
 
-    if (std::abs(centerCx - coord.x) > UNLOAD_RADIUS ||
-        std::abs(centerCz - coord.z) > UNLOAD_RADIUS)
+    if (std::abs(centerCx - coord.x) > renderRadius_ + 1 ||
+        std::abs(centerCz - coord.z) > renderRadius_ + 1)
     {
       const ChunkCoord neighbors[] = {
         {coord.x - 1, coord.y, coord.z},
@@ -666,8 +673,8 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
     const ChunkCoord&  coord = entry.first;
   
     // カメラから離れたチャンクは描画しない
-    if (std::abs(centerCx - coord.x) > RENDER_RADIUS ||
-        std::abs(centerCz - coord.z) > RENDER_RADIUS)
+    if (std::abs(centerCx - coord.x) > renderRadius_ ||
+        std::abs(centerCz - coord.z) > renderRadius_)
       continue;
 
     const ChunkMesh*   mesh = entry.second.get();
