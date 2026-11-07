@@ -71,6 +71,10 @@ int main()
     int   lastCx = std::numeric_limits<int>::max();
     int   lastCz = std::numeric_limits<int>::max();
     int   lastRenderRadius = world.getRenderRadius();
+    #ifdef DEBUG_RENDER_STATS
+      double  fpsLastTime = glfwGetTime();
+      int   frameCount = 0;
+    #endif
 
     // レンダリングループ 
     while (!window.shouldClose())
@@ -103,8 +107,6 @@ int main()
         lastRenderRadius = renderRadius;
       }
 
-
-    
       // 更新が必要なチャンクのメッシュを再生成  
       world.updateDirtyChunks();
       
@@ -126,7 +128,8 @@ int main()
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
       
       // 描画
-      world.draw(shader, baseModel, view, projection, cx, cz);
+      RenderStats stats =
+        world.draw(shader, baseModel, view, projection, cx, cz);
 
       // 十字表示
       glDisable(GL_DEPTH_TEST);
@@ -135,6 +138,26 @@ int main()
 
       // swap buffers and poll IO events
       glfwSwapBuffers(window.getWindow());
+
+      #ifdef DEBUG_RENDER_STATS
+      // Calculate and display rendering statistics every second.
+
+      ++frameCount;
+
+      double  elapsed = glfwGetTime() - fpsLastTime;
+
+      if (elapsed >= 1.0)
+      {
+        double  fps = static_cast<double>(frameCount) / elapsed;
+        std::cout << "FPS: " << fps
+                  << " | Vertices: " << stats.vertices
+                  << " | Draw Chunks: " << stats.chunks << std::endl;
+                  frameCount = 0;
+                  fpsLastTime = glfwGetTime();
+      }
+      #else
+        (void)stats;
+      #endif
     }
   }
   catch(const std::exception& e)

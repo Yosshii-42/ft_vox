@@ -28,4 +28,5 @@ public:
 
   void  upload(const std::vector<Vertex>& vertices);
   void  draw() const;
+  size_t  getVertexCount() const;
 };
