@@ -141,12 +141,6 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
     newMesh->upload(vertices);  // ->GPU
     addMesh(coord, std::move(newMesh));
   }
-  // std::cout << "Chunk ("
-  //           << coord.x << ", "
-  //           << coord.y << ", "
-  //           << coord.z << ") : "
-  //           << vertices.size() / 6
-  //           << " faces" << '\n';
 }
 
 void  DrawWorld::buildAllMeshes()
@@ -590,8 +584,6 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
 {
   const int heightChunks = 4;
 
-  // std::set<ChunkCoord>  dirtyChunks;
-
   for (int cy = 0; cy < heightChunks; ++cy)
   {
     for (int cz = centerCz - renderRadius_; cz <= centerCz + renderRadius_; ++cz)
@@ -662,10 +654,11 @@ void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
 }
 
 // 描画
-void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
+RenderStats DrawWorld::draw(Shader& shader, const Mat4& baseModel,
                       const Mat4& view, const Mat4& projection,
                       int centerCx, int centerCz) const
 {
+  RenderStats   stats;
   const Frustum frustum(view, projection);
 
   for (const auto& entry : meshes_)
@@ -678,7 +671,7 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
       continue;
 
     const ChunkMesh*   mesh = entry.second.get();
-    if (mesh == nullptr)
+    if (mesh == nullptr || mesh->getVertexCount() == 0)
       continue;
 
     const Vec3  min(coord.x * VOXEL_CHUNK_SIZE,
@@ -698,7 +691,12 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
 
     shader.setMatrices(model, view, projection);
     mesh->draw();
+
+    // 描画したチャンクと頂点数をし集計
+    ++stats.chunks;
+    stats.vertices += mesh->getVertexCount();
   }
+  return (stats);
 }
 
 void  DrawWorld::testChunkBoundary(TerrainGenerator& generator)

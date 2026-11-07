@@ -11,6 +11,11 @@
 #include <memory>
 #include <vector>
 
+struct RenderStats {
+  size_t  vertices = 0;
+  size_t  chunks = 0;
+};
+
 class DrawWorld {
 private:
   std::map<ChunkCoord, std::unique_ptr<ChunkData>>  chunks_;
@@ -81,9 +86,9 @@ public:
   void  unloadFarChunks(int centerCx, int centerCz);  
 
   // 描画
-  void  draw(Shader& shader, const Mat4& baseModel,
-             const Mat4& view, const Mat4& projection,
-             int centerCx, int centerCz) const;
+  RenderStats  draw(Shader& shader, const Mat4& baseModel,
+                    const Mat4& view, const Mat4& projection,
+                    int centerCx, int centerCz) const;
 
   void  testChunkBoundary(TerrainGenerator& generator);
 

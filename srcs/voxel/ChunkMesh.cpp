@@ -61,3 +61,8 @@ void  ChunkMesh::draw() const
                static_cast<GLsizei>(vertexCount_));
   glBindVertexArray(0);
 }
+
+size_t  ChunkMesh::getVertexCount() const
+{
+  return (vertexCount_);
+}
