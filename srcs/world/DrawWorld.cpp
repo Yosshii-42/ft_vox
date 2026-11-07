@@ -24,29 +24,52 @@ void  DrawWorld::setBlock(int bx, int by, int bz, BlockID id)
     return;
 
   chunk->setBlock(local.x, local.y, local.z, id);
-  buildMesh(coord);
+  markChunkDirty(coord);
 
-  // ブロックがチャンク境界にある場合、隣接チャンクのメッシュを再生成する
+  // ブロックがチャンク境界にある場合、隣接チャンクも更新対象に登録する
 
   // x方向
   if (local.x == 0)
-    buildMesh({coord.x - 1, coord.y, coord.z});
+    markChunkDirty({coord.x - 1, coord.y, coord.z});
   else if (local.x == VOXEL_CHUNK_SIZE - 1)
-    buildMesh({coord.x + 1, coord.y, coord.z});
+    markChunkDirty({coord.x + 1, coord.y, coord.z});
 
   // y方向
   if (local.y == 0)
-    buildMesh({coord.x, coord.y - 1, coord.z});
+    markChunkDirty({coord.x, coord.y - 1, coord.z});
   else if (local.y == VOXEL_CHUNK_SIZE - 1)
-    buildMesh({coord.x, coord.y + 1, coord.z});
+    markChunkDirty({coord.x, coord.y + 1, coord.z});
 
   // z方向
   if (local.z == 0)
-    buildMesh({coord.x, coord.y, coord.z - 1});
+    markChunkDirty({coord.x, coord.y, coord.z - 1});
   else if (local.z == VOXEL_CHUNK_SIZE - 1)
-    buildMesh({coord.x, coord.y, coord.z + 1});
+    markChunkDirty({coord.x, coord.y, coord.z + 1});
 }
 
+void  DrawWorld::markChunkDirty(const ChunkCoord& coord)
+{
+  if (getChunk(coord) == nullptr)
+    return;
+  
+  dirtyChunks_.insert(coord);
+}
+
+void  DrawWorld::updateDirtyChunks()
+{
+  std::set<ChunkCoord>  pending;
+  pending.swap(dirtyChunks_); // 対象をpendingに移す
+
+  if (!pending.empty())
+    std::cout << "Dirty chunks: " << pending.size() << '\n';
+
+  // pendingに登録されたチャンクのメッシュを再生成する
+  for (const ChunkCoord& coord : pending)
+    buildMesh(coord);
+
+  if (!pending.empty())
+    std::cout << "Remaining dirty: " << dirtyChunks_.size() << std::endl;
+}
 
 // chunk
 void  DrawWorld::addChunk(const ChunkCoord& coord, const ChunkData& chunk)
@@ -664,27 +687,27 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
 void  DrawWorld::testChunkBoundary(TerrainGenerator& generator)
 {
   ChunkCoord  coordA{0, 0, 0};
-  // ChunkCoord  coordB{-1, 0, 0};
+  ChunkCoord  coordB{-1, 0, 0};
   // ChunkCoord  coordC{0, -1, 0};
   // ChunkCoord  coordD{0, 0, -1};
 
   ChunkData chunkA;
-  // ChunkData chunkB;
+  ChunkData chunkB;
   // ChunkData chunkC;
   // ChunkData chunkD;
 
   generator.generateChunk(0, 0, 0, chunkA);
-  // generator.generateChunk(-1, 0, 0, chunkB);
+  generator.generateChunk(-1, 0, 0, chunkB);
   // generator.generateChunk(0, -1, 0, chunkC);
   // generator.generateChunk(0, 0, -1, chunkD);
 
   addChunk(coordA, chunkA);
-  // addChunk(coordB, chunkB);
+  addChunk(coordB, chunkB);
   // addChunk(coordC, chunkC);
   // addChunk(coordD, chunkD);
 
   buildMesh(coordA);
-  // buildMesh(coordB);
+  buildMesh(coordB);
   // buildMesh(coordC);
   // buildMesh(coordD);
 
@@ -693,6 +716,13 @@ void  DrawWorld::testChunkBoundary(TerrainGenerator& generator)
 
   // std::cout << "--- Restore boudary block ---" << std::endl;
   // setBlock(0, 0, 0, BLOCK_STONE);
+
+  std::cout << "--- Change multiple blocks ---" << std::endl;
+
+  setBlock(0, 8, 8, BLOCK_AIR);
+
+
+  std::cout << "Dirty chunks: " << dirtyChunks_.size() << std::endl;
 }
 
 

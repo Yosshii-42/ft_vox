@@ -87,8 +87,8 @@ int main()
 #ifdef DEBUG_CHUNK_BOUNDARY
 #else
         world.loadAround(cx, cz, generator);
-#endif
         world.unloadFarChunks(cx, cz);
+#endif
 
         lastCx = cx;
         lastCz = cz;
@@ -98,6 +98,9 @@ int main()
 
       // キー操作
       window.processInput(textureScale, camera, deltaTime);
+    
+      // 更新が必要なチャンクのメッシュを再生成  
+      world.updateDirtyChunks();
       
       // 毎フレーム画面と深度バッファをクリア
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

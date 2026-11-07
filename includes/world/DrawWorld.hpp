@@ -7,13 +7,15 @@
 #include "gl/Shader.hpp"
 #include "world/TerrainGenerator.hpp"
 #include <map>
+#include <set>
 #include <memory>
 #include <vector>
 
 class DrawWorld {
 private:
-  std::map<ChunkCoord, std::unique_ptr<ChunkData>> chunks_;
-  std::map<ChunkCoord, std::unique_ptr<ChunkMesh>> meshes_;
+  std::map<ChunkCoord, std::unique_ptr<ChunkData>>  chunks_;
+  std::map<ChunkCoord, std::unique_ptr<ChunkMesh>>  meshes_;
+  std::set<ChunkCoord>                              dirtyChunks_;
 
 public:
   static constexpr int  RENDER_RADIUS = 5;
@@ -26,6 +28,10 @@ public:
 
   // block
   void              setBlock(int bx, int by, int bz, BlockID id);
+
+  // dirtyChunks
+  void  markChunkDirty(const ChunkCoord& coord);
+  void  updateDirtyChunks();
 
   // chunk
   void              addChunk(const ChunkCoord& coord, const ChunkData& chunk);
@@ -62,7 +68,9 @@ public:
   void  addGreedyFacePosZ(std::vector<Vertex>& vertices, float x, float y, float z,
     float w, float h, float layer) const;
 
-  //
+
+
+  // ->GPU
   void  loadAround(int centerCx, int centerCz, TerrainGenerator& generator);
   void  unloadFarChunks(int centerCx, int centerCz);  
 
