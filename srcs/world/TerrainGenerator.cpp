@@ -22,8 +22,7 @@ void  TerrainGenerator::generateChunk(int cx, int cy, int cz, ChunkData& chunk)
     {
       for (int x = 0; x < VOXEL_CHUNK_SIZE; ++x)
       {
-        BlockID id = (x < 8) ? BLOCK_STONE : BLOCK_DIRT;
-        chunk.setBlock(x, y, z, id);
+        chunk.setBlock(x, y, z, BLOCK_STONE);
       }
     }
   }
