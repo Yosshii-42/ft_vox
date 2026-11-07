@@ -134,12 +134,12 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
     newMesh->upload(vertices);  // ->GPU
     addMesh(coord, std::move(newMesh));
   }
-  std::cout << "Chunk ("
-            << coord.x << ", "
-            << coord.y << ", "
-            << coord.z << ") : "
-            << vertices.size() / 6
-            << " faces" << '\n';
+  // std::cout << "Chunk ("
+  //           << coord.x << ", "
+  //           << coord.y << ", "
+  //           << coord.z << ") : "
+  //           << vertices.size() / 6
+  //           << " faces" << '\n';
 }
 
 void  DrawWorld::buildAllMeshes()
@@ -583,7 +583,7 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
 {
   const int heightChunks = 4;
 
-  std::set<ChunkCoord>  dirtyChunks;
+  // std::set<ChunkCoord>  dirtyChunks;
 
   for (int cy = 0; cy < heightChunks; ++cy)
   {
@@ -603,7 +603,7 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
         addChunk(coord, chunk);
 
         // メッシュの新規生成・再構築が必要なチャンク
-        dirtyChunks.insert(coord);
+        markChunkDirty(coord);
 
         const ChunkCoord  neighbors[] = {
           {cx - 1, cy, cz},
@@ -617,14 +617,11 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
         for (const ChunkCoord& neighbor : neighbors)
         {
           if (getChunk(neighbor) != nullptr)
-            dirtyChunks.insert(neighbor);
+            markChunkDirty(neighbor);
         }
       }
     }
   }
-
-  for (const ChunkCoord& coord : dirtyChunks)
-    buildMesh(coord);   
 }
 
 void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
@@ -636,6 +633,19 @@ void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
     if (std::abs(centerCx - coord.x) > UNLOAD_RADIUS ||
         std::abs(centerCz - coord.z) > UNLOAD_RADIUS)
     {
+      const ChunkCoord neighbors[] = {
+        {coord.x - 1, coord.y, coord.z},
+        {coord.x + 1, coord.y, coord.z},
+        {coord.x, coord.y - 1, coord.z},
+        {coord.x, coord.y + 1, coord.z},
+        {coord.x, coord.y, coord.z - 1},
+        {coord.x, coord.y, coord.z + 1}
+      };
+
+      for (const ChunkCoord& neighbor : neighbors)
+        markChunkDirty(neighbor);
+
+      dirtyChunks_.erase(coord);
       meshes_.erase(coord);
       it = chunks_.erase(it);
     }

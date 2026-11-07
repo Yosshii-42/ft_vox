@@ -56,15 +56,15 @@ int main()
     DrawWorld world;
     TerrainGenerator  generator(12345);
 
-#ifdef DEBUG_CHUNK_BOUNDARY
-    world.testChunkBoundary(generator);
-#else
-    const Vec3& pos = camera.getPosition();
-    int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
-    int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
+    #ifdef DEBUG_CHUNK_BOUNDARY
+      world.testChunkBoundary(generator);
+    #else
+      const Vec3& pos = camera.getPosition();
+      int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
+      int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
 
-    world.loadAround(cx, cz, generator);
-#endif
+      world.loadAround(cx, cz, generator);
+    #endif
 
     float   textureScale = 1.0f;
     float   lastTime = glfwGetTime();
@@ -84,11 +84,11 @@ int main()
       
       if (cx != lastCx || cz != lastCz)
       {
-#ifdef DEBUG_CHUNK_BOUNDARY
-#else
-        world.loadAround(cx, cz, generator);
-        world.unloadFarChunks(cx, cz);
-#endif
+        #ifdef DEBUG_CHUNK_BOUNDARY
+        #else
+          world.loadAround(cx, cz, generator);
+          world.unloadFarChunks(cx, cz);
+        #endif
 
         lastCx = cx;
         lastCz = cz;
