@@ -18,6 +18,7 @@ private:
   unsigned int  VAO_ = 0;
   unsigned int  VBO_ = 0;
   size_t        vertexCount_ = 0;
+  size_t        bufferCapacity_ = 0;
 
 public:
   ChunkMesh() = default;
