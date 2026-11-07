@@ -664,35 +664,35 @@ void  DrawWorld::draw(Shader& shader, const Mat4& baseModel,
 void  DrawWorld::testChunkBoundary(TerrainGenerator& generator)
 {
   ChunkCoord  coordA{0, 0, 0};
-  ChunkCoord  coordB{-1, 0, 0};
-  ChunkCoord  coordC{0, -1, 0};
-  ChunkCoord  coordD{0, 0, -1};
+  // ChunkCoord  coordB{-1, 0, 0};
+  // ChunkCoord  coordC{0, -1, 0};
+  // ChunkCoord  coordD{0, 0, -1};
 
   ChunkData chunkA;
-  ChunkData chunkB;
-  ChunkData chunkC;
-  ChunkData chunkD;
+  // ChunkData chunkB;
+  // ChunkData chunkC;
+  // ChunkData chunkD;
 
   generator.generateChunk(0, 0, 0, chunkA);
-  generator.generateChunk(-1, 0, 0, chunkB);
-  generator.generateChunk(0, -1, 0, chunkC);
-  generator.generateChunk(0, 0, -1, chunkD);
+  // generator.generateChunk(-1, 0, 0, chunkB);
+  // generator.generateChunk(0, -1, 0, chunkC);
+  // generator.generateChunk(0, 0, -1, chunkD);
 
   addChunk(coordA, chunkA);
-  addChunk(coordB, chunkB);
-  addChunk(coordC, chunkC);
-  addChunk(coordD, chunkD);
+  // addChunk(coordB, chunkB);
+  // addChunk(coordC, chunkC);
+  // addChunk(coordD, chunkD);
 
   buildMesh(coordA);
-  buildMesh(coordB);
-  buildMesh(coordC);
-  buildMesh(coordD);
+  // buildMesh(coordB);
+  // buildMesh(coordC);
+  // buildMesh(coordD);
 
-  std::cout << "--- Remove boundary block ---" << std::endl;
-  setBlock(0, 0, 0, BLOCK_AIR);
+  // std::cout << "--- Remove boundary block ---" << std::endl;
+  // setBlock(0, 0, 0, BLOCK_AIR);
 
-  std::cout << "--- Restore boudary block ---" << std::endl;
-  setBlock(0, 0, 0, BLOCK_STONE);
+  // std::cout << "--- Restore boudary block ---" << std::endl;
+  // setBlock(0, 0, 0, BLOCK_STONE);
 }
 
 
