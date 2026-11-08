@@ -26,10 +26,24 @@ glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
 
 	// glfw: window creation
   // ---------------------
-  window_ = glfwCreateWindow(width_,
-                             height_,
+  GLFWmonitor*  monitor = glfwGetPrimaryMonitor();
+  if (monitor == NULL)
+  {
+    glfwTerminate();
+    throw std::runtime_error("Failed to get primary monitor");
+  }
+
+  const GLFWvidmode*  mode = glfwGetVideoMode(monitor);
+  if (mode == NULL)
+  {
+    glfwTerminate();
+    throw std::runtime_error("Failed to get video mode");
+  }
+
+  window_ = glfwCreateWindow(mode->width,
+                             mode->height,
                              "ft_vox",
-                             NULL,
+                             monitor,
                              NULL);
 	if (window_ == NULL)
 	{
@@ -137,9 +151,9 @@ void Window::processInput(float& textureScale, Camera& camera,
   if (glfwGetKey(window_, GLFW_KEY_2) == GLFW_PRESS)
     world.setRenderRadius(5);
 
-  // [3] Long(8チャンク)
+  // [3] Long(16チャンク)
   if (glfwGetKey(window_, GLFW_KEY_3) == GLFW_PRESS)
-    world.setRenderRadius(8);
+    world.setRenderRadius(16);
 }
 
 // tab判定

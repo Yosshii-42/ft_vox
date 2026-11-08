@@ -2,12 +2,16 @@
 #pragma once
 
 #include "voxel/VoxCommon.hpp"
+#include "world/PerlinNoise.hpp"
 
 class ChunkData;
 
 class TerrainGenerator {
 private:
-  Seed  seed_;
+  Seed        seed_;
+  PerlinNoise perlin_;
+
+  int getGroundHeight(int worldX, int worldZ) const;
 
 public:
   TerrainGenerator() = delete;
