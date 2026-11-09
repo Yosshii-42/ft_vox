@@ -3,6 +3,7 @@
 #include "voxel/ChunkData.hpp"
 
 #include <cmath>
+#include <algorithm>
 
 TerrainGenerator::TerrainGenerator(Seed seed)
   : seed_(seed)
@@ -38,9 +39,7 @@ void  TerrainGenerator::generateChunk(int cx, int cy, int cz, ChunkData& chunk)
       {
         BlockID id = BLOCK_AIR;
         int worldX = cx * VOXEL_CHUNK_SIZE + x;
-        int groundHeight = 4 +
-                           static_cast<int>(
-                            std::floor(static_cast<double>(worldX) / 2));
+        int groundHeight = getGroundHeight(worldX, worldZ);
 
         if (worldY == 0)
           id = BLOCK_BEDROCK;
@@ -51,7 +50,7 @@ void  TerrainGenerator::generateChunk(int cx, int cy, int cz, ChunkData& chunk)
 
         // テスト用の空洞
         if (worldX >= 8 && worldX < 24 &&
-            worldY >= 3 && worldY < 12 &&
+            worldY >= 3 && worldY < 20 &&
             worldZ >= 8 && worldZ < 24)
         {
           id = BLOCK_AIR;
@@ -61,4 +60,23 @@ void  TerrainGenerator::generateChunk(int cx, int cy, int cz, ChunkData& chunk)
     }
   }
 #endif
+}
+
+int TerrainGenerator::getGroundHeight(int worldX, int worldZ) const
+{
+  double  x = static_cast<double>(worldX);
+  double  z = static_cast<double>(worldZ);
+
+  double  large = perlin_.noise(x * 0.01, z * 0.01) * 16.0;
+  double  medium = perlin_.noise(x * 0.03, z * 0.03) * 8.0;
+  double  small = perlin_.noise(x * 0.09, z * 0.09) * 3.0;
+
+  // 山岳地帯
+  double  mountainNoise = perlin_.noise(x * 0.003, z * 0.003);
+
+  double  mountain = std::max(0.0, mountainNoise - 0.1) * 120.0;
+
+  double  height = 20.0 + large + medium + small + mountain;
+
+  return (static_cast<int>(std::floor(height)));
 }

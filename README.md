@@ -201,6 +201,8 @@ The object can be manipulated using the following keyboard controls:
 - [std::array<>](https://cpprefjp.github.io/reference/array/array.html)
 - [Texture sample](https://minecraftjapan.miraheze.org/wiki/)
 - [Frustum Culling](https://learnopengl.com/Guest-Articles/2021/Scene/Frustum-Culling)
+- [Making map](https://www.redblobgames.com/maps/terrain-from-noise/?utm_source=chatgpt.com)
+- [Making mountain](https://devforum.roblox.com/t/creating-procedural-mountains-a-fractal-noise-tutorial/1494362?utm_source=chatgpt.com)
 
 ## AI Usage
 
