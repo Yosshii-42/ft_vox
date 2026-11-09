@@ -27,6 +27,9 @@ private:
 public:
   static constexpr int  RENDER_RADIUS = 5;
   static constexpr int  UNLOAD_RADIUS = RENDER_RADIUS + 1;
+  static constexpr int  WORLD_HEIGHT = 256;
+  static constexpr int  WORLD_CHUNK_HEIGHT = WORLD_HEIGHT / VOXEL_CHUNK_SIZE;
+
 
   DrawWorld();
   ~DrawWorld();

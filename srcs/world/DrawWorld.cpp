@@ -582,9 +582,9 @@ void  DrawWorld::addGreedyFacePosZ(std::vector<Vertex>& vertices,
 
 void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& generator)
 {
-  const int heightChunks = 4;
+  // const int heightChunks = 4;
 
-  for (int cy = 0; cy < heightChunks; ++cy)
+  for (int cy = 0; cy < WORLD_CHUNK_HEIGHT; ++cy)
   {
     for (int cz = centerCz - renderRadius_; cz <= centerCz + renderRadius_; ++cz)
     {
@@ -642,7 +642,10 @@ void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
       };
 
       for (const ChunkCoord& neighbor : neighbors)
-        markChunkDirty(neighbor);
+      {
+        if (getChunk(neighbor) != nullptr)
+          markChunkDirty(neighbor);
+      }
 
       dirtyChunks_.erase(coord);
       meshes_.erase(coord);
