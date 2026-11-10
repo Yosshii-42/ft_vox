@@ -53,8 +53,8 @@ int main()
       "textures/stone.png",
       "textures/bedrock.png"});
     
-    DrawWorld world;
-    TerrainGenerator  generator(12345);
+      TerrainGenerator  generator(12345);
+      DrawWorld world(generator);
 
     #ifdef DEBUG_CHUNK_BOUNDARY
       world.testChunkBoundary(generator);
@@ -63,7 +63,7 @@ int main()
       int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
       int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
 
-      world.loadAround(cx, cz, generator);
+      world.loadAround(cx, cz);
     #endif
 
     float textureScale = 1.0f;
@@ -95,20 +95,20 @@ int main()
       int renderRadius = world.getRenderRadius();
       
       // ③ チャンクを更新
-      if (cx != lastCx || cz != lastCz || renderRadius != lastRenderRadius)
-      {
-        #ifndef DEBUG_CHUNK_BOUNDARY
-          world.loadAround(cx, cz, generator);
-          world.unloadFarChunks(cx, cz);
-        #endif
-
-        lastCx = cx;
-        lastCz = cz;
-        lastRenderRadius = renderRadius;
-      }
+      #ifndef DEBUG_CHUNK_BOUNDARY
+        world.loadAround(cx, cz);
+        if (cx != lastCx || cz != lastCz || renderRadius != lastRenderRadius)
+        {
+            world.unloadFarChunks(cx, cz);
+            
+            lastCx = cx;
+            lastCz = cz;
+            lastRenderRadius = renderRadius;
+        }
+      #endif
 
       // 更新が必要なチャンクのメッシュを再生成  
-      world.updateDirtyChunks();
+      world.updateDirtyChunks(camera);
       
       // 毎フレーム画面と深度バッファをクリア
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -3,10 +3,15 @@
 #include "voxel/VoxCommon.hpp"
 #include "voxel/ChunkMesh.hpp"
 #include "math/Frustum.hpp"
+#include "math/Vec2.hpp"
 #include <set>
 #include <GLFW/glfw3.h>
+#include <chrono>
+#include <limits>
 
-DrawWorld::DrawWorld() {}
+// 参照先のgeneratorの寿命に注意が必要
+DrawWorld::DrawWorld(TerrainGenerator& generator)
+  : loader_(generator) {}
 
 DrawWorld::~DrawWorld() {}
 
@@ -68,23 +73,72 @@ void  DrawWorld::markChunkDirty(const ChunkCoord& coord)
   dirtyChunks_.insert(coord);
 }
 
-void  DrawWorld::updateDirtyChunks()
+void  DrawWorld::updateDirtyChunks(const Camera& camera)
 {
-  std::set<ChunkCoord>  pending;
-  pending.swap(dirtyChunks_); // 対象をpendingに移す
+  int count = 0;
+  double  searchMs = 0;
+  double  meshMs = 0;
+  Vec3  pos = camera.getPosition();
+  ChunkCoord  center = toChunkCoord(
+    static_cast<int>(std::floor(pos.x)),
+    static_cast<int>(std::floor(pos.y)),
+    static_cast<int>(std::floor(pos.z))
+  );
 
-  // pendingに登録されたチャンクのメッシュを再生成する
-  for (const ChunkCoord& coord : pending)
+  auto  start = std::chrono::steady_clock::now();
+  while (count < 20 && !dirtyChunks_.empty())
+  {
+    auto  nearest = dirtyChunks_.end();
+    double  minLength = std::numeric_limits<double>::max();
+    
+    auto  searchStart = std::chrono::steady_clock::now();
+    for (auto it = dirtyChunks_.begin(); it != dirtyChunks_.end(); ++it)
+    {
+      double  dx = it->x - center.x;
+      double  dy = it->y - center.y;
+      double  dz = it->z - center.z;
+      double  squareLength = (dx * dx + dy * dy + dz * dz);
+
+      if (squareLength < minLength)
+      {
+        minLength = squareLength;
+        nearest = it;
+      }
+    }
+    auto  searchEnd = std::chrono::steady_clock::now();
+    // pendingに登録されたチャンクのメッシュを再生成する
+    ChunkCoord  coord = *nearest;
+    dirtyChunks_.erase(nearest);
+    auto  meshStart = std::chrono::steady_clock::now();
+    // std::cout << "buildmesh: " << coord.x << ", " << coord.y << ", " << coord.z << std::endl;
     buildMesh(coord);
+    // std::cout << "buildMesh END\n";
+    auto  meshEnd = std::chrono::steady_clock::now();
+    ++count;
+
+    searchMs += std::chrono::duration<double, std::milli>(
+    searchEnd - searchStart).count();
+    meshMs += std::chrono::duration<double, std::milli>(
+    meshEnd - meshStart).count();
+    auto  now = std::chrono::steady_clock::now();
+    double  elapsedMs = std::chrono::duration<double, std::milli>(
+      now - start).count();
+    if (elapsedMs >= 5.0)
+      break;
+  }
+
+  if (dirtyChunks_.size() > 0)
+    std::cout << "Chunks: " << dirtyChunks_.size()
+          << ", Search Time: " << searchMs << " ms , Mesh Time: " << meshMs << " ms\n";
 }
 
 // chunk
-void  DrawWorld::addChunk(const ChunkCoord& coord, const ChunkData& chunk)
+void  DrawWorld::addChunk(const ChunkCoord& coord, std::unique_ptr<ChunkData> chunk)
 {
   if (chunks_.find(coord) != chunks_.end())
     return ;
 
-  chunks_[coord] = std::make_unique<ChunkData>(chunk);
+  chunks_[coord] = std::move(chunk);
 }
 
 const ChunkData*  DrawWorld::getChunk(const ChunkCoord& coord) const
@@ -580,10 +634,8 @@ void  DrawWorld::addGreedyFacePosZ(std::vector<Vertex>& vertices,
   vertices.push_back({x,     y,     z + 1, 0, 0, layer, 5});
 }
 
-void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& generator)
+void  DrawWorld::loadAround(int centerCx, int centerCz)
 {
-  // const int heightChunks = 4;
-
   for (int cy = 0; cy < WORLD_CHUNK_HEIGHT; ++cy)
   {
     for (int cz = centerCz - renderRadius_; cz <= centerCz + renderRadius_; ++cz)
@@ -596,29 +648,42 @@ void  DrawWorld::loadAround(int centerCx, int centerCz, TerrainGenerator& genera
         {
           continue;
         }
-        
-        ChunkData chunk;
-        generator.generateChunk(cx, cy, cz, chunk);
-        addChunk(coord, chunk);
 
-        // メッシュの新規生成・再構築が必要なチャンク
-        markChunkDirty(coord);
-
-        const ChunkCoord  neighbors[] = {
-          {cx - 1, cy, cz},
-          {cx + 1, cy, cz},
-          {cx, cy - 1, cz},
-          {cx, cy + 1, cz},
-          {cx, cy, cz - 1},
-          {cx, cy, cz + 1}
-        };
-
-        for (const ChunkCoord& neighbor : neighbors)
+        if (pendingChunks_.find(coord) == pendingChunks_.end() &&
+            chunks_.find(coord) == chunks_.end())
         {
-          if (getChunk(neighbor) != nullptr)
-            markChunkDirty(neighbor);
-        }
+          loader_.requestChunk(coord);
+          pendingChunks_.insert(coord);
+        }  
       }
+    }
+  }
+
+  // pollResult(result) で、キューからチャンクの所有権を受け取る
+  // addChunk() で、chunks_ に所有権を移す
+  // result.chunk は nullptr になる
+  // 次の pollResult(result) で、新しいチャンクの所有権を受け取る
+  ChunkLoader::ChunkResult  result;
+  while (loader_.pollResult(result))
+  {
+    addChunk(result.coord, std::move(result.chunk));
+    pendingChunks_.erase(result.coord);
+
+    // メッシュの新規生成・再構築が必要なチャンク
+    markChunkDirty(result.coord);
+    const ChunkCoord  neighbors[] = {
+      {result.coord.x - 1, result.coord.y, result.coord.z},
+      {result.coord.x + 1, result.coord.y, result.coord.z},
+      {result.coord.x, result.coord.y - 1, result.coord.z},
+      {result.coord.x, result.coord.y + 1, result.coord.z},
+      {result.coord.x, result.coord.y, result.coord.z - 1},
+      {result.coord.x, result.coord.y, result.coord.z + 1}
+    };
+
+    for (const ChunkCoord& neighbor : neighbors)
+    {
+      if (getChunk(neighbor) != nullptr)
+        markChunkDirty(neighbor);
     }
   }
 }
@@ -709,18 +774,18 @@ void  DrawWorld::testChunkBoundary(TerrainGenerator& generator)
   // ChunkCoord  coordC{0, -1, 0};
   // ChunkCoord  coordD{0, 0, -1};
 
-  ChunkData chunkA;
-  ChunkData chunkB;
-  // ChunkData chunkC;
-  // ChunkData chunkD;
+  std::unique_ptr<ChunkData> chunkA;
+  std::unique_ptr<ChunkData> chunkB;
+  // std::unique_ptr<ChunkData> chunkC;
+  // std::unique_ptr<ChunkData> chunkD;
 
-  generator.generateChunk(0, 0, 0, chunkA);
-  generator.generateChunk(-1, 0, 0, chunkB);
-  // generator.generateChunk(0, -1, 0, chunkC);
-  // generator.generateChunk(0, 0, -1, chunkD);
+  generator.generateChunk(0, 0, 0, *chunkA);
+  generator.generateChunk(-1, 0, 0, *chunkB);
+  // generator.generateChunk(0, -1, 0, *chunkC);
+  // generator.generateChunk(0, 0, -1, *chunkD);
 
-  addChunk(coordA, chunkA);
-  addChunk(coordB, chunkB);
+  addChunk(coordA, std::move(chunkA));
+  addChunk(coordB, std::move(chunkB));
   // addChunk(coordC, chunkC);
   // addChunk(coordD, chunkD);
 

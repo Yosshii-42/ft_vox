@@ -23,7 +23,7 @@ public:
   Camera& operator=(const Camera& other) = delete;
 
   void  setPosition(const Vec3& position);
-  Vec3& getPosition();
+  Vec3 getPosition() const;
 
   void  moveForward(float deltaTime);
   void  moveBackward(float deltaTime);

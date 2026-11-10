@@ -18,5 +18,6 @@ public:
   explicit TerrainGenerator(Seed seed);
   ~TerrainGenerator() = default;
 
-  void  generateChunk(int cx, int cy, int cz, ChunkData& chunk);
+  void  generateChunk(int cx, int cy, int cz,
+                      ChunkData& chunk) const;
 };

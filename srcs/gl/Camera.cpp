@@ -17,7 +17,7 @@ void  Camera::setPosition(const Vec3& position)
   position_ = position;
 }
 
-Vec3& Camera::getPosition()
+Vec3 Camera::getPosition() const
 {
   return position_;
 }
