@@ -5,7 +5,9 @@
 #include "voxel/VoxCommon.hpp"
 #include "math/Mat4.hpp"
 #include "gl/Shader.hpp"
+#include "gl/Camera.hpp"
 #include "world/TerrainGenerator.hpp"
+#include "world/ChunkLoader.hpp"
 #include <map>
 #include <set>
 #include <memory>
@@ -21,6 +23,8 @@ private:
   std::map<ChunkCoord, std::unique_ptr<ChunkData>>  chunks_;
   std::map<ChunkCoord, std::unique_ptr<ChunkMesh>>  meshes_;
   std::set<ChunkCoord>  dirtyChunks_;
+  std::set<ChunkCoord>  pendingChunks_;
+  ChunkLoader           loader_;
 
   int renderRadius_ = 5;
 
@@ -31,7 +35,7 @@ public:
   static constexpr int  WORLD_CHUNK_HEIGHT = WORLD_HEIGHT / VOXEL_CHUNK_SIZE;
 
 
-  DrawWorld();
+  DrawWorld(TerrainGenerator& generator);
   ~DrawWorld();
   DrawWorld(const DrawWorld& other) = delete;
   DrawWorld& operator=(const DrawWorld& other) = delete;
@@ -45,10 +49,10 @@ public:
 
   // dirtyChunks
   void  markChunkDirty(const ChunkCoord& coord);
-  void  updateDirtyChunks();
+  void  updateDirtyChunks(const Camera& camera);
 
   // chunk
-  void              addChunk(const ChunkCoord& coord, const ChunkData& chunk);
+  void              addChunk(const ChunkCoord& coord, std::unique_ptr<ChunkData> chunk);
   const ChunkData*  getChunk(const ChunkCoord& coord) const;
   ChunkData*        getMutableChunk(const ChunkCoord& coord);
   
@@ -85,7 +89,7 @@ public:
 
 
   // ->GPU
-  void  loadAround(int centerCx, int centerCz, TerrainGenerator& generator);
+  void  loadAround(int centerCx, int centerCz);
   void  unloadFarChunks(int centerCx, int centerCz);  
 
   // 描画

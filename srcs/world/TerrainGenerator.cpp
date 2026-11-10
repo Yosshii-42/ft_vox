@@ -11,7 +11,8 @@ TerrainGenerator::TerrainGenerator(Seed seed)
   (void)seed_;
 }
 
-void  TerrainGenerator::generateChunk(int cx, int cy, int cz, ChunkData& chunk)
+void  TerrainGenerator::generateChunk(int cx, int cy, int cz,
+                                      ChunkData& chunk) const
 {
 #ifdef DEBUG_CHUNK_BOUNDARY
   (void)cx;

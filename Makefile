@@ -57,7 +57,8 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/voxel/VoxCommon.cpp \
 				srcs/world/TerrainGenerator.cpp \
 				srcs/world/DrawWorld.cpp \
-				srcs/world/PerlinNoise.cpp
+				srcs/world/PerlinNoise.cpp \
+				srcs/world/ChunkLoader.cpp
 
 OBJS	= $(SRCS:.cpp=.o)
 OBJS	:= $(OBJS:.c=.o)
