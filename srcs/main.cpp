@@ -96,15 +96,17 @@ int main()
       
       // ③ チャンクを更新
       #ifndef DEBUG_CHUNK_BOUNDARY
-        world.loadAround(cx, cz);
-        if (cx != lastCx || cz != lastCz || renderRadius != lastRenderRadius)
-        {
-            world.unloadFarChunks(cx, cz);
-            
-            lastCx = cx;
-            lastCz = cz;
-            lastRenderRadius = renderRadius;
+      if (cx != lastCx || cz != lastCz || renderRadius != lastRenderRadius)
+      {
+          world.loadAround(cx, cz);
+          world.unloadFarChunks(cx, cz);
+          
+          lastCx = cx;
+          lastCz = cz;
+          lastRenderRadius = renderRadius;
         }
+        //　毎フレーム生成結果を回収
+        world.collectLoadedChunks();
       #endif
 
       // 更新が必要なチャンクのメッシュを再生成  
