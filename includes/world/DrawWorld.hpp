@@ -41,21 +41,26 @@ public:
   DrawWorld& operator=(const DrawWorld& other) = delete;
 
   // radius
-  void  setRenderRadius(int radius);
-  int   getRenderRadius() const;
+  void              setRenderRadius(int radius);
+  int               getRenderRadius() const;
 
   // block
   void              setBlock(int bx, int by, int bz, BlockID id);
 
   // dirtyChunks
-  void  markChunkDirty(const ChunkCoord& coord);
-  void  updateDirtyChunks(const Camera& camera);
+  void              markChunkDirty(const ChunkCoord& coord);
+  void              updateDirtyChunks(const Camera& camera);
 
   // chunk
   void              addChunk(const ChunkCoord& coord, std::unique_ptr<ChunkData> chunk);
   const ChunkData*  getChunk(const ChunkCoord& coord) const;
   ChunkData*        getMutableChunk(const ChunkCoord& coord);
+    // ->GPU
+  void  loadAround(int centerCx, int centerCz);
+  void  collectLoadedChunks();
+  void  unloadFarChunks(int centerCx, int centerCz);
   
+
   // mesh
   void              buildMesh(const ChunkCoord& cood);
   void              buildAllMeshes();
@@ -85,12 +90,6 @@ public:
     float w, float h, float layer) const;
   void  addGreedyFacePosZ(std::vector<Vertex>& vertices, float x, float y, float z,
     float w, float h, float layer) const;
-
-
-
-  // ->GPU
-  void  loadAround(int centerCx, int centerCz);
-  void  unloadFarChunks(int centerCx, int centerCz);  
 
   // 描画
   RenderStats  draw(Shader& shader, const Mat4& baseModel,

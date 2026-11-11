@@ -161,6 +161,100 @@ ChunkData*  DrawWorld::getMutableChunk(const ChunkCoord& coord)
   return it->second.get();
 }
 
+// チャンク生成要求
+void  DrawWorld::loadAround(int centerCx, int centerCz)
+{
+  for (int cy = 0; cy < WORLD_CHUNK_HEIGHT; ++cy)
+  {
+    for (int cz = centerCz - renderRadius_; cz <= centerCz + renderRadius_; ++cz)
+    {
+      for (int cx = centerCx - renderRadius_; cx <= centerCx + renderRadius_; ++cx)
+      {
+        ChunkCoord  coord{cx, cy, cz};
+
+        if (getChunk(coord) != nullptr)
+        {
+          continue;
+        }
+
+        if (pendingChunks_.find(coord) == pendingChunks_.end() &&
+            chunks_.find(coord) == chunks_.end())
+        {
+          loader_.requestChunk(coord);
+          pendingChunks_.insert(coord);
+        }  
+      }
+    }
+  }
+}
+
+// 非同期生成結果の回収
+void  DrawWorld::collectLoadedChunks()
+{
+  // pollResult(result) で、キューからチャンクの所有権を受け取る
+  // addChunk() で、chunks_ に所有権を移す
+  // result.chunk は nullptr になる
+  // 次の pollResult(result) で、新しいチャンクの所有権を受け取る
+  // ChunkLoader::ChunkResult  result;
+  ChunkLoader::ChunkResult result;
+  while (loader_.pollResult(result))
+  {
+    addChunk(result.coord, std::move(result.chunk));
+    pendingChunks_.erase(result.coord);
+
+    // メッシュの新規生成・再構築が必要なチャンク
+    markChunkDirty(result.coord);
+    const ChunkCoord  neighbors[] = {
+      {result.coord.x - 1, result.coord.y, result.coord.z},
+      {result.coord.x + 1, result.coord.y, result.coord.z},
+      {result.coord.x, result.coord.y - 1, result.coord.z},
+      {result.coord.x, result.coord.y + 1, result.coord.z},
+      {result.coord.x, result.coord.y, result.coord.z - 1},
+      {result.coord.x, result.coord.y, result.coord.z + 1}
+    };
+
+    for (const ChunkCoord& neighbor : neighbors)
+    {
+      if (getChunk(neighbor) != nullptr)
+        markChunkDirty(neighbor);
+    }
+  }  
+}
+
+// 不要なチャンクの破棄
+void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
+{
+  for (auto it = chunks_.begin(); it != chunks_.end();)
+  {
+    const ChunkCoord& coord = it->first;
+
+    if (std::abs(centerCx - coord.x) > renderRadius_ + 1 ||
+        std::abs(centerCz - coord.z) > renderRadius_ + 1)
+    {
+      const ChunkCoord neighbors[] = {
+        {coord.x - 1, coord.y, coord.z},
+        {coord.x + 1, coord.y, coord.z},
+        {coord.x, coord.y - 1, coord.z},
+        {coord.x, coord.y + 1, coord.z},
+        {coord.x, coord.y, coord.z - 1},
+        {coord.x, coord.y, coord.z + 1}
+      };
+
+      for (const ChunkCoord& neighbor : neighbors)
+      {
+        if (getChunk(neighbor) != nullptr)
+          markChunkDirty(neighbor);
+      }
+
+      dirtyChunks_.erase(coord);
+      meshes_.erase(coord);
+      it = chunks_.erase(it);
+    }
+    else
+      ++it;
+  }
+}
+
 // mesh upload()はメインスレッドで呼び出す
 void  DrawWorld::buildMesh(const ChunkCoord& coord)
 {
@@ -634,92 +728,6 @@ void  DrawWorld::addGreedyFacePosZ(std::vector<Vertex>& vertices,
   vertices.push_back({x,     y,     z + 1, 0, 0, layer, 5});
 }
 
-void  DrawWorld::loadAround(int centerCx, int centerCz)
-{
-  for (int cy = 0; cy < WORLD_CHUNK_HEIGHT; ++cy)
-  {
-    for (int cz = centerCz - renderRadius_; cz <= centerCz + renderRadius_; ++cz)
-    {
-      for (int cx = centerCx - renderRadius_; cx <= centerCx + renderRadius_; ++cx)
-      {
-        ChunkCoord  coord{cx, cy, cz};
-
-        if (getChunk(coord) != nullptr)
-        {
-          continue;
-        }
-
-        if (pendingChunks_.find(coord) == pendingChunks_.end() &&
-            chunks_.find(coord) == chunks_.end())
-        {
-          loader_.requestChunk(coord);
-          pendingChunks_.insert(coord);
-        }  
-      }
-    }
-  }
-
-  // pollResult(result) で、キューからチャンクの所有権を受け取る
-  // addChunk() で、chunks_ に所有権を移す
-  // result.chunk は nullptr になる
-  // 次の pollResult(result) で、新しいチャンクの所有権を受け取る
-  ChunkLoader::ChunkResult  result;
-  while (loader_.pollResult(result))
-  {
-    addChunk(result.coord, std::move(result.chunk));
-    pendingChunks_.erase(result.coord);
-
-    // メッシュの新規生成・再構築が必要なチャンク
-    markChunkDirty(result.coord);
-    const ChunkCoord  neighbors[] = {
-      {result.coord.x - 1, result.coord.y, result.coord.z},
-      {result.coord.x + 1, result.coord.y, result.coord.z},
-      {result.coord.x, result.coord.y - 1, result.coord.z},
-      {result.coord.x, result.coord.y + 1, result.coord.z},
-      {result.coord.x, result.coord.y, result.coord.z - 1},
-      {result.coord.x, result.coord.y, result.coord.z + 1}
-    };
-
-    for (const ChunkCoord& neighbor : neighbors)
-    {
-      if (getChunk(neighbor) != nullptr)
-        markChunkDirty(neighbor);
-    }
-  }
-}
-
-void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
-{
-  for (auto it = chunks_.begin(); it != chunks_.end();)
-  {
-    const ChunkCoord& coord = it->first;
-
-    if (std::abs(centerCx - coord.x) > renderRadius_ + 1 ||
-        std::abs(centerCz - coord.z) > renderRadius_ + 1)
-    {
-      const ChunkCoord neighbors[] = {
-        {coord.x - 1, coord.y, coord.z},
-        {coord.x + 1, coord.y, coord.z},
-        {coord.x, coord.y - 1, coord.z},
-        {coord.x, coord.y + 1, coord.z},
-        {coord.x, coord.y, coord.z - 1},
-        {coord.x, coord.y, coord.z + 1}
-      };
-
-      for (const ChunkCoord& neighbor : neighbors)
-      {
-        if (getChunk(neighbor) != nullptr)
-          markChunkDirty(neighbor);
-      }
-
-      dirtyChunks_.erase(coord);
-      meshes_.erase(coord);
-      it = chunks_.erase(it);
-    }
-    else
-      ++it;
-  }
-}
 
 // 描画
 RenderStats DrawWorld::draw(Shader& shader, const Mat4& baseModel,
