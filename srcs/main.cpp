@@ -128,6 +128,8 @@ int main()
       glActiveTexture(GL_TEXTURE0);
       tex.bind();
       shader.setFloat("textureScale", textureScale);
+      shader.setVec3("ambientLight", Common::AMBIENT_LIGHT);
+      shader.setFloat("ambientStrength", Common::AMBIENT_STRENGTH);
 
       // 行列
       Mat4  baseModel;

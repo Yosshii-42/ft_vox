@@ -2,6 +2,7 @@
 #include <utility>
 #include <thread>
 #include <iostream>
+#include <algorithm>
 
 ChunkLoader::ChunkLoader(TerrainGenerator& generator)
   : generator_(generator)
