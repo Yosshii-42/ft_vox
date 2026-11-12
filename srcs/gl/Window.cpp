@@ -40,10 +40,12 @@ glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
     throw std::runtime_error("Failed to get video mode");
   }
 
-  window_ = glfwCreateWindow(1280,
-                             720,
+  width_ = mode->width;
+  height_ = mode->height;
+  window_ = glfwCreateWindow(width_,
+                             height_,
                              "ft_vox",
-                             NULL,
+                             monitor,
                              NULL);
 	if (window_ == NULL)
 	{
