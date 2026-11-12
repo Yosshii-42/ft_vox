@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include "math/Vec3.hpp"
 
 namespace Common
 {
@@ -13,6 +14,10 @@ namespace Common
   constexpr float CAMERA_FOV = 45.0f;
   constexpr float CAMERA_NEAR = 0.1f;
   constexpr float CAMERA_FAR = 100.0f;
+
+  // light settings
+  inline const Vec3 AMBIENT_LIGHT(1.0f, 1.0f, 1.0f);
+  constexpr float   AMBIENT_STRENGTH = 1.0f;
 
   constexpr float VECTOR_EPSILON = 1e-5f;
 
