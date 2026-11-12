@@ -126,10 +126,11 @@ void  DrawWorld::updateDirtyChunks(const Camera& camera)
     if (elapsedMs >= 5.0)
       break;
   }
-
-  if (dirtyChunks_.size() > 0)
-    std::cout << "Chunks: " << dirtyChunks_.size()
-          << ", Search Time: " << searchMs << " ms , Mesh Time: " << meshMs << " ms\n";
+  (void)searchMs;
+  (void)meshMs;
+  // if (dirtyChunks_.size() > 0)
+  //   std::cout << "Chunks: " << dirtyChunks_.size()
+  //         << ", Search Time: " << searchMs << " ms , Mesh Time: " << meshMs << " ms\n";
 }
 
 // chunk
@@ -162,8 +163,9 @@ ChunkData*  DrawWorld::getMutableChunk(const ChunkCoord& coord)
 }
 
 // チャンク生成要求
-void  DrawWorld::loadAround(int centerCx, int centerCz)
+void  DrawWorld::loadAround(int centerCx, int centerCy, int centerCz)
 {
+  loader_.setCenter(centerCx, centerCy, centerCz);
   for (int cy = 0; cy < WORLD_CHUNK_HEIGHT; ++cy)
   {
     for (int cz = centerCz - renderRadius_; cz <= centerCz + renderRadius_; ++cz)
@@ -196,7 +198,10 @@ void  DrawWorld::collectLoadedChunks()
   // result.chunk は nullptr になる
   // 次の pollResult(result) で、新しいチャンクの所有権を受け取る
   // ChunkLoader::ChunkResult  result;
+  auto  start = std::chrono::steady_clock::now();
+  constexpr double  MAX_COLLECT_MS = 2.0;
   ChunkLoader::ChunkResult result;
+
   while (loader_.pollResult(result))
   {
     addChunk(result.coord, std::move(result.chunk));
@@ -218,6 +223,17 @@ void  DrawWorld::collectLoadedChunks()
       if (getChunk(neighbor) != nullptr)
         markChunkDirty(neighbor);
     }
+
+    auto  now = std::chrono::steady_clock::now();
+    
+    double  elapsedMs = std::chrono::duration<double, std::milli>(now - start).count();
+
+    if (elapsedMs > 5.0)
+    {
+      std::cout << "Single chunk: " << elapsedMs << " ms\n";
+    }
+    if (elapsedMs >= MAX_COLLECT_MS)
+      break;
   }  
 }
 

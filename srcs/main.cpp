@@ -61,14 +61,16 @@ int main()
     #else
       const Vec3& pos = camera.getPosition();
       int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
+      int cy = floorDiv(static_cast<int>(std::floor(pos.y)));
       int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
 
-      world.loadAround(cx, cz);
+      world.loadAround(cx, cy, cz);
     #endif
 
     float textureScale = 1.0f;
     float lastTime = glfwGetTime();
     int   lastCx = std::numeric_limits<int>::max();
+    int   lastCy = std::numeric_limits<int>::max();
     int   lastCz = std::numeric_limits<int>::max();
     int   lastRenderRadius = world.getRenderRadius();
     #ifdef DEBUG_RENDER_STATS
@@ -90,18 +92,21 @@ int main()
       // ② 変更前のカメラ位置と描画距離を取得
       const Vec3& pos = camera.getPosition();
       int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
+      int cy = floorDiv(static_cast<int>(std::floor(pos.y)));
       int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
 
       int renderRadius = world.getRenderRadius();
       
       // ③ チャンクを更新
       #ifndef DEBUG_CHUNK_BOUNDARY
-      if (cx != lastCx || cz != lastCz || renderRadius != lastRenderRadius)
-      {
-          world.loadAround(cx, cz);
+        if (cx != lastCx || cy != lastCy || cz != lastCz ||
+            renderRadius != lastRenderRadius)
+        {
+          world.loadAround(cx, cy, cz);
           world.unloadFarChunks(cx, cz);
-          
+
           lastCx = cx;
+          lastCy = cy;
           lastCz = cz;
           lastRenderRadius = renderRadius;
         }
@@ -109,7 +114,7 @@ int main()
         world.collectLoadedChunks();
       #endif
 
-      // 更新が必要なチャンクのメッシュを再生成  
+      // 更新が必要なチャンクのメッシュを再生成
       world.updateDirtyChunks(camera);
       
       // 毎フレーム画面と深度バッファをクリア
@@ -138,7 +143,6 @@ int main()
       crosshair.draw(crosshairShader, window.getAspectRatio());
       glEnable(GL_DEPTH_TEST);
 
-      // swap buffers and poll IO events
       glfwSwapBuffers(window.getWindow());
 
       #ifdef DEBUG_RENDER_STATS
