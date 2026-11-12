@@ -40,10 +40,10 @@ glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
     throw std::runtime_error("Failed to get video mode");
   }
 
-  window_ = glfwCreateWindow(mode->width,
-                             mode->height,
+  window_ = glfwCreateWindow(1280,
+                             720,
                              "ft_vox",
-                             monitor,
+                             NULL,
                              NULL);
 	if (window_ == NULL)
 	{
@@ -51,7 +51,7 @@ glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
     throw std::runtime_error("Failed to create GLFW window");
 	}
 	glfwMakeContextCurrent(window_);
-  glfwSwapInterval(1);
+  glfwSwapInterval(0);
   glfwSetWindowUserPointer(window_, this);
   glfwSetFramebufferSizeCallback(window_, Window::framebufferSizeCallback);
   glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // マウスの移動量取得
@@ -215,8 +215,6 @@ float Window::getAspectRatio() const
 // ウィンドウのサイズが変更されるたびに呼び出されるコールバック関数
 void  Window::framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
-	// (void)window;
-
   // OpenGLにレンダリングウィンドウのサイズを伝える
 	// 最初の２つの引数でウィンドウの左下隅の位置を設定する
 	glViewport(0, 0, width, height);

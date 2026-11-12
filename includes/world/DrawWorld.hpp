@@ -56,7 +56,7 @@ public:
   const ChunkData*  getChunk(const ChunkCoord& coord) const;
   ChunkData*        getMutableChunk(const ChunkCoord& coord);
     // ->GPU
-  void  loadAround(int centerCx, int centerCz);
+  void  loadAround(int centerCx, int centerCy, int centerCz);
   void  collectLoadedChunks();
   void  unloadFarChunks(int centerCx, int centerCz);
   

@@ -16,7 +16,8 @@ public:
   };
 
 private:
-  std::queue<ChunkCoord>  requests_;  // メイン書き込み、ワーカー読み出し
+  std::vector<ChunkCoord> requests_;  // メイン書き込み、ワーカー読み出し
+  ChunkCoord              currentCenter_{0, 0, 0};
   std::queue<ChunkResult> results_;   // ワーカー書き込み、メイン読み出し
 
   std::mutex              mutex_;
@@ -27,13 +28,14 @@ private:
   bool  stop_ = false;
 
   void  workerLoop();
-
-public:
+  
+  public:
   explicit ChunkLoader(TerrainGenerator& generator);
   ~ChunkLoader();
   ChunkLoader(const ChunkLoader& other) = delete;
   ChunkLoader& operator=(const ChunkLoader& other) = delete;
-
+  
   void  requestChunk(const ChunkCoord& coord);
   bool  pollResult(ChunkResult& result);
+  void  setCenter(int cx, int cy, int cz);
 };
