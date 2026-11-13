@@ -353,15 +353,16 @@ BlockID DrawWorld::getBlock(int bx, int by, int bz) const
   return (chunk->getBlockID(local.x, local.y, local.z));
 }
 
-float DrawWorld::getTextureLayer(BlockID id) const
+float DrawWorld::getTextureLayer(BlockID id, int face) const
 {
   switch (id)
   {
-  case BLOCK_DIRT:      return 0.0f;
+  case BLOCK_DIRT:
+    if (face == 3)      return 4.0f;
+    return 0.0f;
   case BLOCK_STONE:     return 1.0f;
   case BLOCK_BEDROCK:   return 2.0f;
-  case BLOCK_SAND:      return 3.0f;
-  case BLOCK_SNOW:      return 4.0f;
+  // case BLOCK_SNOW:      return 4.0f;
   case BLOCK_WATER:     return 5.0f;
   case BLOCK_MAGMA:     return 6.0f;
   case BLOCK_CRISTAL:   return 7.0f;
@@ -453,9 +454,9 @@ void  DrawWorld::calcGreedyVertexUVx(const ChunkCoord& coord,
         float gh = static_cast<float>(height);
 
         if (face == 0)
-          addGreedyFaceNegX(vertices, gx, gy, gz, gw, gh, getTextureLayer(id));
+          addGreedyFaceNegX(vertices, gx, gy, gz, gw, gh, getTextureLayer(id, face));
         else if (face == 1)
-          addGreedyFacePosX(vertices, gx, gy, gz, gw, gh, getTextureLayer(id));
+          addGreedyFacePosX(vertices, gx, gy, gz, gw, gh, getTextureLayer(id, face));
 
         // マスク消去
         for (int dy = 0; dy < height; ++dy)
@@ -552,9 +553,9 @@ void  DrawWorld::calcGreedyVertexUVy(const ChunkCoord& coord,
         float gh = static_cast<float>(height);
 
         if (face == 2)
-          addGreedyFaceNegY(vertices, gx, gy, gz, gw, gh, getTextureLayer(id));
+          addGreedyFaceNegY(vertices, gx, gy, gz, gw, gh, getTextureLayer(id, face));
         else if (face == 3)
-          addGreedyFacePosY(vertices, gx, gy, gz, gw, gh, getTextureLayer(id));
+          addGreedyFacePosY(vertices, gx, gy, gz, gw, gh, getTextureLayer(id, face));
 
         // マスク消去
         for (int dz = 0; dz < height; ++dz)
@@ -651,9 +652,9 @@ void  DrawWorld::calcGreedyVertexUVz(const ChunkCoord& coord,
         float gh = static_cast<float>(height);
 
         if (face == 4)
-          addGreedyFaceNegZ(vertices, gx, gy, gz, gw, gh, getTextureLayer(id));
+          addGreedyFaceNegZ(vertices, gx, gy, gz, gw, gh, getTextureLayer(id, face));
         else if (face == 5)
-          addGreedyFacePosZ(vertices, gx, gy, gz, gw, gh, getTextureLayer(id));
+          addGreedyFacePosZ(vertices, gx, gy, gz, gw, gh, getTextureLayer(id, face));
 
         // マスク消去
         for (int dy = 0; dy < height; ++dy)
@@ -835,7 +836,7 @@ void  DrawWorld::testChunkBoundary(TerrainGenerator& generator)
 
 // 古いコード
 void  DrawWorld::calcVertex(const ChunkCoord& coord,
-                            std::vector<Vertex>& vertices) const
+                            std::vector<Vertex>& vertices, int face) const
 {
   vertices.clear();
 
@@ -853,7 +854,7 @@ void  DrawWorld::calcVertex(const ChunkCoord& coord,
         if (id == BLOCK_AIR)
           continue;
 
-        float layer = getTextureLayer(id);
+        float layer = getTextureLayer(id, face);
 
         for (int face = 0; face < 6; ++face)
         {

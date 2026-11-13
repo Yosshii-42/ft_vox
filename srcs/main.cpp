@@ -51,7 +51,8 @@ int main()
     tex.load({
       "textures/dirt.png",
       "textures/stone.png",
-      "textures/bedrock.png"});
+      "textures/bedrock.png",
+      "textures/dirt_top.png"});
     
       TerrainGenerator  generator(12345);
       DrawWorld world(generator);
@@ -122,14 +123,16 @@ int main()
       
       // GPUに渡す / 使用するshaderprogramを指定し、作った行列をuniformに送る
       shader.use();
+        // texture
       shader.setInt("ourTexture", 0);
-
-      // texture
       glActiveTexture(GL_TEXTURE0);
       tex.bind();
       shader.setFloat("textureScale", textureScale);
+        // light
       shader.setVec3("ambientLight", Common::AMBIENT_LIGHT);
       shader.setFloat("ambientStrength", Common::AMBIENT_STRENGTH);
+      shader.setVec3("lightDir", Common::LIGHT_DIRECTION);
+      shader.setFloat("sunLightStrength", Common::SUN_LIGHT_STRENGTH);
 
       // 行列
       Mat4  baseModel;
