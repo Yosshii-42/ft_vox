@@ -71,7 +71,7 @@ public:
   // block ID
   BlockID           getBlock(int bx, int by, int bz) const;
   // get Layer
-  float getTextureLayer(BlockID id) const;
+  float getTextureLayer(BlockID id, int face) const;
 
   // vertices作成
   void  calcGreedyVertexUVx(const ChunkCoord& coord, std::vector<Vertex>& vertices, int face) const;
@@ -99,7 +99,7 @@ public:
   void  testChunkBoundary(TerrainGenerator& generator);
 
   // 旧Vertices作成
-  void  calcVertex(const ChunkCoord& coord, std::vector<Vertex>& vertices) const;
+  void  calcVertex(const ChunkCoord& coord, std::vector<Vertex>& vertices, int face) const;
   void  addFace(std::vector<Vertex>& vertices, float x, float y, float z, int face, float layer) const;
   void  addFaceNegX(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
   void  addFacePosX(std::vector<Vertex>& vertices, float x, float y, float z, float layer) const;
