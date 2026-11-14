@@ -79,7 +79,6 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
       ID_ = 0;
     }
     throw;
-    // std::cerr << e.what() << '\n';
   }
   
   // Successfully linked

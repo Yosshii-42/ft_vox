@@ -14,8 +14,11 @@
 #include "voxel/ChunkMesh.hpp"
 #include "voxel/ChunkData.hpp"
 #include "voxel/VoxCommon.hpp"
+#include "voxel/SkyBox.hpp"
 #include "world/TerrainGenerator.hpp"
 #include "world/DrawWorld.hpp"
+#include "graphics/OpenGLSettings.hpp"
+#include "TexturePaths.hpp"
 
 int main()
 {
@@ -24,38 +27,28 @@ int main()
   {
     // window作成とOpenGL初期設定
     Window window;
-    glEnable(GL_DEPTH_TEST);                            // 深度テストを有効にする
-    glEnable(GL_BLEND);                                 // ブレンディングを有効にする
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // どうブレンドするかを指定する
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);               // 背景色   
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);          // 描画mode設定
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    // glDisable(GL_CULL_FACE);                            // 裏面処理
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
-   
+    initOpenGLSettings();
+
     // shaderをインスタンス化 注)OpenGLコンテキストを使うのでWindowの後
     Shader  shader("shaders/vertex.glsl", "shaders/fragment.glsl");
     Shader  crosshairShader("shaders/crosshair.vert", "shaders/crosshair.frag");
+    Shader  skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
     Crosshair crosshair;
-
-    // shaderが正常にコンパイルされたらwindow表示する
     window.show();
 
     // camera作成
     Camera  camera;
     camera.setPosition(Vec3(16.0f, 35.0f, 16.0f));
 
+    // 画像読み込み
     TextureArray  tex;
-    tex.load({
-      "textures/dirt.png",
-      "textures/stone.png",
-      "textures/bedrock.png",
-      "textures/dirt_top.png"});
-    
-      TerrainGenerator  generator(12345);
-      DrawWorld world(generator);
+    tex.load(TexturePaths::terrain);
+    SkyBox  skybox;
+    skybox.load(TexturePaths::skybox);
+
+    // 地形作成
+    TerrainGenerator  generator(12345);
+    DrawWorld world(generator);
 
     #ifdef DEBUG_CHUNK_BOUNDARY
       world.testChunkBoundary(generator);
@@ -74,6 +67,9 @@ int main()
     int   lastCy = std::numeric_limits<int>::max();
     int   lastCz = std::numeric_limits<int>::max();
     int   lastRenderRadius = world.getRenderRadius();
+    float sunAngle = 0.0f;
+    float sunSpeed = 0.1f;
+    // float sunLightStrength = 0.25f;
     #ifdef DEBUG_RENDER_STATS
       double  fpsLastTime = glfwGetTime();
       int   frameCount = 0;
@@ -115,13 +111,13 @@ int main()
         world.collectLoadedChunks();
       #endif
 
-      // 更新が必要なチャンクのメッシュを再生成
+      // ④　更新が必要なチャンクのメッシュを再生成
       world.updateDirtyChunks(camera);
       
       // 毎フレーム画面と深度バッファをクリア
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       
-      // GPUに渡す / 使用するshaderprogramを指定し、作った行列をuniformに送る
+      // ⑤ GPUに渡す / 使用するshaderprogramを指定し、作った行列をuniformに送る
       shader.use();
         // texture
       shader.setInt("ourTexture", 0);
@@ -129,21 +125,38 @@ int main()
       tex.bind();
       shader.setFloat("textureScale", textureScale);
         // light
+      sunAngle += sunSpeed * deltaTime;
+      float sunX = std::cos(sunAngle);
+      float sunY = std::sin(sunAngle);
+      float sunZ = 0.0f;
+      Vec3  sunLightDirection = Vec3(sunX, sunY, sunZ);
+      float sunLightStrength = std::max(0.0f, sunY * 0.25f);
+      float ambientStrength = 0.1f + std::max(0.0f, sunY) * 0.65f;
       shader.setVec3("ambientLight", Common::AMBIENT_LIGHT);
-      shader.setFloat("ambientStrength", Common::AMBIENT_STRENGTH);
-      shader.setVec3("lightDir", Common::LIGHT_DIRECTION);
-      shader.setFloat("sunLightStrength", Common::SUN_LIGHT_STRENGTH);
+      shader.setFloat("ambientStrength", ambientStrength);
+      shader.setVec3("sunLightDir", sunLightDirection);
+      shader.setFloat("sunLightStrength", sunLightStrength);
 
       // 行列
       Mat4  baseModel;
       Mat4  view = camera.getViewMatrix();
       Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
       
-      // 描画
+      // ⑥ ワールド描画
       RenderStats stats =
         world.draw(shader, baseModel, view, projection, cx, cz);
 
-      // 十字表示
+      // ⑦ Skybox描画
+      Mat4  skyboxView = camera.getSkyboxViewMatrix();
+      Mat4  skyboxProjection = camera.getProjectionMatrix(window.getAspectRatio());
+      skyboxShader.use();
+      skyboxShader.setInt("ourTexture", 0);
+      glActiveTexture(GL_TEXTURE0);
+      skyboxShader.setMat4("view", skyboxView);
+      skyboxShader.setMat4("projection", skyboxProjection);
+      skybox.draw(skyboxShader);
+
+      // ⑧ 十字表示
       glDisable(GL_DEPTH_TEST);
       crosshair.draw(crosshairShader, window.getAspectRatio());
       glEnable(GL_DEPTH_TEST);

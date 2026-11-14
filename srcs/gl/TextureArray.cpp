@@ -11,7 +11,7 @@ TextureArray::~TextureArray()
 void  TextureArray::load(const std::vector<std::string>& paths)
 {
   if (paths.empty())
-    throw std::runtime_error("No texture paths provided");
+    throw std::runtime_error("No texture paths provided: block");
 
   int width = 0;
   int height = 0;
@@ -26,7 +26,7 @@ void  TextureArray::load(const std::vector<std::string>& paths)
   );
 
   if (pixels == nullptr)
-      throw std::runtime_error("Failed to load texture:");
+      throw std::runtime_error("Failed to load texture: block");
 
   stbi_image_free(pixels);
 
