@@ -40,5 +40,6 @@ public:
   void  rotate(float drltaX, float deltaY);
 
   Mat4  getViewMatrix() const;
+  Mat4  getSkyboxViewMatrix() const;
   Mat4  getProjectionMatrix(float aspectRatio) const;
 };

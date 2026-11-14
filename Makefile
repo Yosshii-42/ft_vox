@@ -55,10 +55,12 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/voxel/ChunkMesh.cpp \
 				srcs/voxel/ChunkData.cpp \
 				srcs/voxel/VoxCommon.cpp \
+				srcs/voxel/SkyBox.cpp \
 				srcs/world/TerrainGenerator.cpp \
 				srcs/world/DrawWorld.cpp \
 				srcs/world/PerlinNoise.cpp \
-				srcs/world/ChunkLoader.cpp
+				srcs/world/ChunkLoader.cpp \
+				srcs/graphics/OpenGLSettings.cpp
 
 OBJS	= $(SRCS:.cpp=.o)
 OBJS	:= $(OBJS:.c=.o)

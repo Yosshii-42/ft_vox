@@ -109,6 +109,14 @@ Mat4  Camera::getViewMatrix() const
   return (view);
 }
 
+Mat4 Camera::getSkyboxViewMatrix() const
+{
+  Mat4  view;
+  view *= Mat4::rotate(-pitch_, Vec3(1.0f, 0.0f, 0.0f));
+  view *= Mat4::rotate(-yaw_, Vec3(0.0f, 1.0f, 0.0f));
+  return (view);  
+}
+
 Mat4  Camera::getProjectionMatrix(float aspectRatio) const
 {
   Mat4  projection;

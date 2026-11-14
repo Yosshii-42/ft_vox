@@ -9,7 +9,7 @@ flat in int       TexLayer;
 uniform sampler2DArray ourTexture;
 uniform vec3      ambientLight;
 uniform float     ambientStrength;
-uniform vec3      lightDir;
+uniform vec3      sunLightDir;
 uniform float     sunLightStrength;
 // uniform vec3      sunLightColor;
 
@@ -26,7 +26,7 @@ void  main()
     default: normal = vec3(0, 0, 1); break;
   }
 
-  float diffuse = max(0, dot(normal, normalize(lightDir)));
+  float diffuse = max(0, dot(normal, normalize(sunLightDir)));
 
   vec2  tileUV = fract(TexCoord);
   vec4  texColor = texture(ourTexture, vec3(tileUV, float(TexLayer)));
