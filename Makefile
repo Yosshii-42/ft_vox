@@ -19,7 +19,8 @@ CXXFLAGS	= -Wall -Wextra -Werror -std=c++17 \
 			  		-MMD -MP
 # CXXFLAGS += -DDEBUG_NORMAL_MESH
 # CXXFLAGS += -DDEBUG_CHUNK_BOUNDARY
-# CXXFLAGS += -DDEBUG_RENDER_STATS
+CXXFLAGS += -DDEBUG_RENDER_STATS
+# CXXFLAGS += -DDEBUG_FAST_DAY_NIGHT
 
 CFLAGS		= -Wall -Wextra -Werror \
 			  		-I./includes \
@@ -60,7 +61,9 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/world/DrawWorld.cpp \
 				srcs/world/PerlinNoise.cpp \
 				srcs/world/ChunkLoader.cpp \
-				srcs/graphics/OpenGLSettings.cpp
+				srcs/world/SunMoon.cpp \
+				srcs/graphics/OpenGLSettings.cpp \
+				srcs/graphics/RenderHelpers.cpp
 
 OBJS	= $(SRCS:.cpp=.o)
 OBJS	:= $(OBJS:.c=.o)

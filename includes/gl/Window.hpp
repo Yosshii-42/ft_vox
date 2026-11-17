@@ -31,8 +31,7 @@ public:
   
   void  show();
   GLFWwindow* getWindow() const;
-  void  processInput(float& textureScale, Camera& camera,
-                     float deltaTime, DrawWorld& world);
+  void  processInput(Camera& camera, float deltaTime, DrawWorld& world);
   void  tabJudge();
   void  mouseOperate(Camera& camera);
   bool  shouldClose() const;

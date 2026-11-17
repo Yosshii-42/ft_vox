@@ -280,7 +280,7 @@ void  DrawWorld::buildMesh(const ChunkCoord& coord)
   std::vector<Vertex> vertices;
 
   #ifdef DEBUG_NORMAL_MESH
-    calcVertex(coord, vertices);
+    // calcVertex(coord, vertices, face);
   #else
     for (int face = 0; face < 6; ++face)
     {

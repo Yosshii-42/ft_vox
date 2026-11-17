@@ -12,7 +12,6 @@ flat out int  Face;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-// uniform float textureScale;
 
 void  main()
 {

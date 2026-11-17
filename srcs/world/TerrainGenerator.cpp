@@ -56,7 +56,8 @@ void  TerrainGenerator::generateChunk(int cx, int cy, int cz,
         {
           id = BLOCK_AIR;
         }
-        chunk.setBlock(x, y, z, id);
+        if (id != BLOCK_AIR)
+          chunk.setBlock(x, y, z, id);
       }
     }
   }

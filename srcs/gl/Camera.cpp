@@ -1,4 +1,5 @@
 #include "gl/Camera.hpp"
+#include "voxel/VoxCommon.hpp"
 #include <algorithm>
 #include <iostream>
 
@@ -125,4 +126,13 @@ Mat4  Camera::getProjectionMatrix(float aspectRatio) const
                                   near_,
                                   far_);
   return (projection);
+}
+
+ChunkCoord  Camera::getChunkCoord(const Vec3& pos) const
+{
+  ChunkCoord  coord;
+  coord.x = floorDiv(static_cast<int>(std::floor(pos.x)));
+  coord.y = floorDiv(static_cast<int>(std::floor(pos.y)));
+  coord.z = floorDiv(static_cast<int>(std::floor(pos.z)));
+  return (coord);
 }

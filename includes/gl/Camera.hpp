@@ -2,6 +2,7 @@
 
 #include "math/Mat4.hpp"
 #include "math/Vec3.hpp"
+#include "voxel/VoxCommon.hpp"
 #include "Common.hpp"
 
 class Camera {
@@ -23,7 +24,7 @@ public:
   Camera& operator=(const Camera& other) = delete;
 
   void  setPosition(const Vec3& position);
-  Vec3 getPosition() const;
+  Vec3  getPosition() const;
 
   void  moveForward(float deltaTime);
   void  moveBackward(float deltaTime);
@@ -42,4 +43,5 @@ public:
   Mat4  getViewMatrix() const;
   Mat4  getSkyboxViewMatrix() const;
   Mat4  getProjectionMatrix(float aspectRatio) const;
+  ChunkCoord  getChunkCoord(const Vec3& pos) const;
 };

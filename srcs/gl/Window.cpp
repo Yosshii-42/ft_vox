@@ -57,6 +57,7 @@ glfwInitHint(GLFW_COCOA_CHDIR_RESOURCES, GLFW_FALSE);
   glfwSetWindowUserPointer(window_, this);
   glfwSetFramebufferSizeCallback(window_, Window::framebufferSizeCallback);
   glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // マウスの移動量取得
+  // glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL); // マウスの移動量取得
 
 	// glad: OpenGL関数を呼び出す前にGLADを初期化する
   // -----------------------------------------
@@ -92,8 +93,7 @@ GLFWwindow*  Window::getWindow() const
   return (window_);
 }
 
-void Window::processInput(float& textureScale, Camera& camera,
-                          float deltaTime, DrawWorld& world)
+void Window::processInput(Camera& camera, float deltaTime, DrawWorld& world)
 {
   // esc
 	if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -137,13 +137,6 @@ void Window::processInput(float& textureScale, Camera& camera,
   // [Right Shift] 下へ移動
   if (glfwGetKey(window_, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
     camera.moveDown(moveDelta);
-
-  // [C] Textureを細かくする
-  if (glfwGetKey(window_, GLFW_KEY_C) == GLFW_PRESS)
-    textureScale *= 1.01f;
-  // [V] Textureを大きくする
-  if (glfwGetKey(window_, GLFW_KEY_V) == GLFW_PRESS)
-    textureScale *= 0.99f;
 
   // tab判定
   tabJudge();
