@@ -185,7 +185,7 @@ The object can be manipulated using the following keyboard controls:
 | `A` / `D` | Move along the X-axis |
 | `W` / `S` | Move along the Z-axis |
 | `SPACE` / `RIGHT SHIFT` | Move along the Y-axis |
-| `C` / `V` | Increase / decrease texture repetition |
+| `X` | x20 speed |
 | `ESC` | Close the window |
 
 ## Resources

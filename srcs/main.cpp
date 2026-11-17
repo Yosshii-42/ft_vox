@@ -17,7 +17,9 @@
 #include "voxel/SkyBox.hpp"
 #include "world/TerrainGenerator.hpp"
 #include "world/DrawWorld.hpp"
+#include "world/SunMoon.hpp"
 #include "graphics/OpenGLSettings.hpp"
+#include "graphics/RenderHelpers.hpp"
 #include "TexturePaths.hpp"
 
 int main()
@@ -30,7 +32,7 @@ int main()
     initOpenGLSettings();
 
     // shaderをインスタンス化 注)OpenGLコンテキストを使うのでWindowの後
-    Shader  shader("shaders/vertex.glsl", "shaders/fragment.glsl");
+    Shader  worldShader("shaders/world.vert", "shaders/world.frag");
     Shader  crosshairShader("shaders/crosshair.vert", "shaders/crosshair.frag");
     Shader  skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
     Crosshair crosshair;
@@ -48,136 +50,73 @@ int main()
 
     // 地形作成
     TerrainGenerator  generator(12345);
-    DrawWorld world(generator);
+    DrawWorld         world(generator);
+    SunMoon           sunMoon;
 
-    #ifdef DEBUG_CHUNK_BOUNDARY
-      world.testChunkBoundary(generator);
-    #else
-      const Vec3& pos = camera.getPosition();
-      int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
-      int cy = floorDiv(static_cast<int>(std::floor(pos.y)));
-      int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
+    // 変数初期化
+    RenderState       state;
 
-      world.loadAround(cx, cy, cz);
-    #endif
-
-    float textureScale = 1.0f;
-    float lastTime = glfwGetTime();
-    int   lastCx = std::numeric_limits<int>::max();
-    int   lastCy = std::numeric_limits<int>::max();
-    int   lastCz = std::numeric_limits<int>::max();
-    int   lastRenderRadius = world.getRenderRadius();
-    float sunAngle = 0.0f;
-    float sunSpeed = 0.1f;
-    // float sunLightStrength = 0.25f;
-    #ifdef DEBUG_RENDER_STATS
-      double  fpsLastTime = glfwGetTime();
-      int   frameCount = 0;
-    #endif
+    // projection行列
+    float             aspectRatio = window.getAspectRatio();
+    const Mat4        projection = camera.getProjectionMatrix(aspectRatio);
 
     // レンダリングループ 
     while (!window.shouldClose())
     {
+      // time
       double  currentTime = glfwGetTime();
-      float   deltaTime = static_cast<float>(currentTime - lastTime);
-      lastTime = currentTime;
+      float   deltaTime = static_cast<float>(currentTime - state.lastTime);
+      state.lastTime = currentTime;
 
-      // ① イベントとキー入力
+      // イベントとキー入力
       glfwPollEvents();
-      window.processInput(textureScale, camera, deltaTime, world);
+      window.processInput(camera, deltaTime, world);
 
-      // ② 変更前のカメラ位置と描画距離を取得
-      const Vec3& pos = camera.getPosition();
-      int cx = floorDiv(static_cast<int>(std::floor(pos.x)));
-      int cy = floorDiv(static_cast<int>(std::floor(pos.y)));
-      int cz = floorDiv(static_cast<int>(std::floor(pos.z)));
-
+      // 変更前のカメラ位置と描画距離を取得
+      const ChunkCoord center = camera.getChunkCoord(camera.getPosition());
       int renderRadius = world.getRenderRadius();
       
-      // ③ チャンクを更新
+      // チャンクを更新
       #ifndef DEBUG_CHUNK_BOUNDARY
-        if (cx != lastCx || cy != lastCy || cz != lastCz ||
-            renderRadius != lastRenderRadius)
+        if (center != state.lastCenter ||
+            renderRadius != state.lastRenderRadius)
         {
-          world.loadAround(cx, cy, cz);
-          world.unloadFarChunks(cx, cz);
+          world.loadAround(center.x, center.y, center.z);
+          world.unloadFarChunks(center.x, center.z);
 
-          lastCx = cx;
-          lastCy = cy;
-          lastCz = cz;
-          lastRenderRadius = renderRadius;
+          state.lastCenter = center;
+          state.lastRenderRadius = renderRadius;
         }
-        //　毎フレーム生成結果を回収
-        world.collectLoadedChunks();
+        world.collectLoadedChunks();  //　毎フレーム生成結果を回収
       #endif
-
-      // ④　更新が必要なチャンクのメッシュを再生成
-      world.updateDirtyChunks(camera);
+      world.updateDirtyChunks(camera);  // 更新が必要なチャンクのメッシュを再生成
       
-      // 毎フレーム画面と深度バッファをクリア
+      // light位置更新
+      sunMoon.update(deltaTime);
+
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       
-      // ⑤ GPUに渡す / 使用するshaderprogramを指定し、作った行列をuniformに送る
-      shader.use();
-        // texture
-      shader.setInt("ourTexture", 0);
-      glActiveTexture(GL_TEXTURE0);
-      tex.bind();
-      shader.setFloat("textureScale", textureScale);
-        // light
-      sunAngle += sunSpeed * deltaTime;
-      float sunX = std::cos(sunAngle);
-      float sunY = std::sin(sunAngle);
-      float sunZ = 0.0f;
-      Vec3  sunLightDirection = Vec3(sunX, sunY, sunZ);
-      float sunLightStrength = std::max(0.0f, sunY * 0.25f);
-      float ambientStrength = 0.1f + std::max(0.0f, sunY) * 0.65f;
-      shader.setVec3("ambientLight", Common::AMBIENT_LIGHT);
-      shader.setFloat("ambientStrength", ambientStrength);
-      shader.setVec3("sunLightDir", sunLightDirection);
-      shader.setFloat("sunLightStrength", sunLightStrength);
-
-      // 行列
-      Mat4  baseModel;
-      Mat4  view = camera.getViewMatrix();
-      Mat4  projection = camera.getProjectionMatrix(window.getAspectRatio());
-      
-      // ⑥ ワールド描画
-      RenderStats stats =
-        world.draw(shader, baseModel, view, projection, cx, cz);
-
-      // ⑦ Skybox描画
-      Mat4  skyboxView = camera.getSkyboxViewMatrix();
-      Mat4  skyboxProjection = camera.getProjectionMatrix(window.getAspectRatio());
-      skyboxShader.use();
-      skyboxShader.setInt("ourTexture", 0);
-      glActiveTexture(GL_TEXTURE0);
-      skyboxShader.setMat4("view", skyboxView);
-      skyboxShader.setMat4("projection", skyboxProjection);
-      skybox.draw(skyboxShader);
-
-      // ⑧ 十字表示
-      glDisable(GL_DEPTH_TEST);
-      crosshair.draw(crosshairShader, window.getAspectRatio());
-      glEnable(GL_DEPTH_TEST);
+      // 描画
+      Matrices    matrices = makeMatrices(camera, projection);
+      RenderStats stats = drawWorld(worldShader, tex, world, matrices, center, sunMoon);  
+      drawSkybox(skyboxShader, skybox, matrices, sunMoon);
+      drawCrosshair(crosshairShader, crosshair, aspectRatio);
 
       glfwSwapBuffers(window.getWindow());
 
-      #ifdef DEBUG_RENDER_STATS
       // Calculate and display rendering statistics every second.
-
-      ++frameCount;
-
-      double  elapsed = glfwGetTime() - fpsLastTime;
+      #ifdef DEBUG_RENDER_STATS
+      ++state.frameCount;
+      double  elapsed = glfwGetTime() - state.fpsLastTime;
 
       if (elapsed >= 1.0)
       {
-        double  fps = static_cast<double>(frameCount) / elapsed;
+        double  fps = static_cast<double>(state.frameCount) / elapsed;
         std::cout << "FPS: " << fps
                   << " | Vertices: " << stats.vertices
                   << " | Draw Chunks: " << stats.chunks << std::endl;
-                  frameCount = 0;
-                  fpsLastTime = glfwGetTime();
+                  state.frameCount = 0;
+                  state.fpsLastTime = glfwGetTime();
       }
       #else
         (void)stats;
@@ -191,5 +130,3 @@ int main()
   } 
 	return (EXIT_SUCCESS);
 }
-
-

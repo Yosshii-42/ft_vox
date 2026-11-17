@@ -29,6 +29,7 @@ void  main()
   float diffuse = max(0, dot(normal, normalize(sunLightDir)));
 
   vec2  tileUV = fract(TexCoord);
+  //vec4  texColor = vec4(0.4, 0.3, 0.2, 1.0);
   vec4  texColor = texture(ourTexture, vec3(tileUV, float(TexLayer)));
   vec3  result = texColor.rgb *
                 (ambientLight * ambientStrength +

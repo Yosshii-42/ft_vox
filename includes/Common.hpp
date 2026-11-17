@@ -13,13 +13,10 @@ namespace Common
   constexpr float CAMERA_DISTANCE = 40.0f;
   constexpr float CAMERA_FOV = 80.0f;
   constexpr float CAMERA_NEAR = 0.1f;
-  constexpr float CAMERA_FAR = 100.0f;
+  constexpr float CAMERA_FAR = 200.0f;
 
   // light settings
   inline const Vec3 AMBIENT_LIGHT(1.0f, 1.0f, 1.0f);
-  // constexpr float   AMBIENT_STRENGTH = 0.75f;
-  // inline const Vec3 LIGHT_DIRECTION(-1.0f, 1.0f, 0.0f);
-  // constexpr float   SUN_LIGHT_STRENGTH = 0.25;
 
   constexpr float VECTOR_EPSILON = 1e-5f;
 
