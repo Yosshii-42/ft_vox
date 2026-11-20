@@ -72,6 +72,9 @@ int main()
       glfwPollEvents();
       window.processInput(camera, deltaTime, world);
 
+      // カメラ向き更新
+      world.setForward(camera.getForward());
+
       // 変更前のカメラ位置と描画距離を取得
       const ChunkCoord center = camera.getChunkCoord(camera.getPosition());
       int renderRadius = world.getRenderRadius();
@@ -81,7 +84,7 @@ int main()
         if (center != state.lastCenter ||
             renderRadius != state.lastRenderRadius)
         {
-          world.loadAround(center.x, center.y, center.z);
+          world.loadAround(center);
           world.unloadFarChunks(center.x, center.z);
 
           state.lastCenter = center;

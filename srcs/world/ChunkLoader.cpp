@@ -44,14 +44,26 @@ void  ChunkLoader::workerLoop()
       });
       if (stop_)
         return;
+
+      // 初回だけ5ms待機する
+      if (isFirstRequest_)
+      {
+        isFirstRequest_ = false;
+        auto  deadline = std::chrono::steady_clock::now() +
+                         std::chrono::milliseconds(5);
+
+        while (!stop_ && std::chrono::steady_clock::now() < deadline)
+          cv_.wait_until(lock, deadline);
+      }
+      if (stop_)
+        return;
       
-      // 最もカメラに近いチャンクを取り出す
+      // 描画の優先度が高いチャンクを取り出す
       auto  nearest = std::min_element(
         requests_.begin(),
         requests_.end(),
         [this](const ChunkCoord& a, const ChunkCoord& b) {
-          return (distanceSquared(a, currentCenter_) <
-                  distanceSquared(b, currentCenter_));
+          return (calcPriority(a) < calcPriority(b));
         });
 
       coord = *nearest;
@@ -70,12 +82,16 @@ void  ChunkLoader::workerLoop()
   }
 }
 
-void  ChunkLoader::setCenter(int cx, int cy, int cz)
+void  ChunkLoader::setCenter(const ChunkCoord& center)
 {
   std::lock_guard<std::mutex> lock(mutex_);
-  currentCenter_.x = cx;
-  currentCenter_.y = cy;
-  currentCenter_.z = cz;
+  currentCenter_ = center;
+}
+
+void  ChunkLoader::setForward(const Vec3& forward)
+{
+  std::lock_guard<std::mutex> lock(mutex_);
+  currentForward_ = forward;
 }
 
 void  ChunkLoader::requestChunk(const ChunkCoord& coord)
@@ -103,3 +119,27 @@ bool  ChunkLoader::pollResult(ChunkResult& result)
   }
 }
 
+float ChunkLoader::calcPriority(const ChunkCoord& coord) const
+{
+  long long distSq = distanceSquared(coord, currentCenter_);
+  if (distSq == 0)
+    return 0.0f;
+
+  float dot = calcDirectionDot(coord);
+  float weight = 1.0f - dot * 0.8f; // 0.8は優先度の係数
+  float priority = distSq * weight;
+
+  return priority;
+}
+
+float ChunkLoader::calcDirectionDot(const ChunkCoord& coord) const
+{
+  long long distSq = distanceSquared(coord, currentCenter_);
+  if (distSq == 0)
+    return 0.0f;
+
+  Vec3  toChunk = Vec3(coord.x - currentCenter_.x,
+                       coord.y - currentCenter_.y,
+                       coord.z - currentCenter_.z).normalize();
+  return (currentForward_.dot(toChunk));  
+}

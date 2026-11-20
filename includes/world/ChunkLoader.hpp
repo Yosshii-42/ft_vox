@@ -3,8 +3,9 @@
 #include "voxel/VoxCommon.hpp"
 #include "voxel/ChunkData.hpp"
 #include "world/TerrainGenerator.hpp"
-#include <condition_variable>
-#include <mutex>
+#include "math/Vec3.hpp"
+// #include <condition_variable>
+// #include <mutex>
 #include <queue>
 #include <thread>
 
@@ -18,7 +19,9 @@ public:
 private:
   std::vector<ChunkCoord> requests_;  // メイン書き込み、ワーカー読み出し
   ChunkCoord              currentCenter_{0, 0, 0};
+  Vec3                    currentForward_{0.0f, 0.0f, -1.0f};
   std::queue<ChunkResult> results_;   // ワーカー書き込み、メイン読み出し
+  bool                    isFirstRequest_ = true;
 
   std::mutex              mutex_;
   std::condition_variable cv_;
@@ -37,5 +40,8 @@ private:
   
   void  requestChunk(const ChunkCoord& coord);
   bool  pollResult(ChunkResult& result);
-  void  setCenter(int cx, int cy, int cz);
+  void  setCenter(const ChunkCoord& center);
+  void  setForward(const Vec3& forward);
+  float calcPriority(const ChunkCoord& coord) const;
+  float calcDirectionDot(const ChunkCoord& coord) const;
 };
