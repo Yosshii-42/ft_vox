@@ -136,3 +136,14 @@ ChunkCoord  Camera::getChunkCoord(const Vec3& pos) const
   coord.z = floorDiv(static_cast<int>(std::floor(pos.z)));
   return (coord);
 }
+
+Vec3  Camera::getForward() const
+{
+  Vec3  forward;
+
+  forward.x = -std::sin(yaw_) * std::cos(pitch_);
+  forward.y = std::sin(pitch_);
+  forward.z = -std::cos(yaw_) * std::cos(pitch_);
+
+  return forward;
+}

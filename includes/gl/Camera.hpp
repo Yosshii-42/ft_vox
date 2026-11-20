@@ -44,4 +44,6 @@ public:
   Mat4  getSkyboxViewMatrix() const;
   Mat4  getProjectionMatrix(float aspectRatio) const;
   ChunkCoord  getChunkCoord(const Vec3& pos) const;
+
+  Vec3  getForward() const;
 };

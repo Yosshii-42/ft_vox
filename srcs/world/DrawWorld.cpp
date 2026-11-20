@@ -15,6 +15,7 @@ DrawWorld::DrawWorld(TerrainGenerator& generator)
 
 DrawWorld::~DrawWorld() {}
 
+// radius
 void  DrawWorld::setRenderRadius(int radius)
 {
   if (radius < 1 || radius == renderRadius_)
@@ -26,6 +27,12 @@ void  DrawWorld::setRenderRadius(int radius)
 int DrawWorld::getRenderRadius() const
 {
   return (renderRadius_);
+}
+
+// camera direction
+void  DrawWorld::setForward(const Vec3& forward)
+{
+  loader_.setForward(forward);
 }
 
 // block: bx,by,bzはワールド座標
@@ -110,9 +117,7 @@ void  DrawWorld::updateDirtyChunks(const Camera& camera)
     ChunkCoord  coord = *nearest;
     dirtyChunks_.erase(nearest);
     auto  meshStart = std::chrono::steady_clock::now();
-    // std::cout << "buildmesh: " << coord.x << ", " << coord.y << ", " << coord.z << std::endl;
     buildMesh(coord);
-    // std::cout << "buildMesh END\n";
     auto  meshEnd = std::chrono::steady_clock::now();
     ++count;
 
@@ -128,9 +133,6 @@ void  DrawWorld::updateDirtyChunks(const Camera& camera)
   }
   (void)searchMs;
   (void)meshMs;
-  // if (dirtyChunks_.size() > 0)
-  //   std::cout << "Chunks: " << dirtyChunks_.size()
-  //         << ", Search Time: " << searchMs << " ms , Mesh Time: " << meshMs << " ms\n";
 }
 
 // chunk
@@ -163,14 +165,14 @@ ChunkData*  DrawWorld::getMutableChunk(const ChunkCoord& coord)
 }
 
 // チャンク生成要求
-void  DrawWorld::loadAround(int centerCx, int centerCy, int centerCz)
+void  DrawWorld::loadAround(const ChunkCoord& center)
 {
-  loader_.setCenter(centerCx, centerCy, centerCz);
+  loader_.setCenter(center);
   for (int cy = 0; cy < WORLD_CHUNK_HEIGHT; ++cy)
   {
-    for (int cz = centerCz - renderRadius_; cz <= centerCz + renderRadius_; ++cz)
+    for (int cz = center.z - renderRadius_; cz <= center.z + renderRadius_; ++cz)
     {
-      for (int cx = centerCx - renderRadius_; cx <= centerCx + renderRadius_; ++cx)
+      for (int cx = center.x - renderRadius_; cx <= center.x + renderRadius_; ++cx)
       {
         ChunkCoord  coord{cx, cy, cz};
 

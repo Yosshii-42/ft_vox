@@ -44,6 +44,9 @@ public:
   void              setRenderRadius(int radius);
   int               getRenderRadius() const;
 
+  // camera direction
+  void              setForward(const Vec3& forward);
+
   // block
   void              setBlock(int bx, int by, int bz, BlockID id);
 
@@ -56,11 +59,10 @@ public:
   const ChunkData*  getChunk(const ChunkCoord& coord) const;
   ChunkData*        getMutableChunk(const ChunkCoord& coord);
     // ->GPU
-  void  loadAround(int centerCx, int centerCy, int centerCz);
-  void  collectLoadedChunks();
-  void  unloadFarChunks(int centerCx, int centerCz);
+  void              loadAround(const ChunkCoord& center);
+  void              collectLoadedChunks();
+  void              unloadFarChunks(int centerCx, int centerCz);
   
-
   // mesh
   void              buildMesh(const ChunkCoord& cood);
   void              buildAllMeshes();
