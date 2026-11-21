@@ -64,3 +64,10 @@ inline constexpr int FACE_DX[6] = {-1, 1, 0, 0, 0, 0};
 inline constexpr int FACE_DY[6] = {0, 0, -1, 1, 0, 0};
 inline constexpr int FACE_DZ[6] = {0, 0, 0, 0, -1, 1};
 
+inline bool  isOutsideRadius(int x, int z, const ChunkCoord& center, int radius)
+{
+  if (x < center.x - radius || x > center.x + radius ||
+      z < center.z - radius || z > center.z + radius)
+      return true;
+  return false;
+}

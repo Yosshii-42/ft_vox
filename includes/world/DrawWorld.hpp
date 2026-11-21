@@ -25,8 +25,9 @@ private:
   std::set<ChunkCoord>  dirtyChunks_;
   std::set<ChunkCoord>  pendingChunks_;
   ChunkLoader           loader_;
+  ChunkCoord            currentCenter_{};
 
-  static constexpr int  RENDER_RADIUS = 16;
+  static constexpr int  RENDER_RADIUS = 18;
   int renderRadius_ = RENDER_RADIUS;  
 
 public:
