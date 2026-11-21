@@ -1,8 +1,10 @@
 #include "world/ChunkLoader.hpp"
+#include "voxel/VoxCommon.hpp"
 #include <utility>
 #include <thread>
 #include <iostream>
 #include <algorithm>
+#include <vector>
 
 ChunkLoader::ChunkLoader(TerrainGenerator& generator)
   : generator_(generator)
@@ -82,10 +84,29 @@ void  ChunkLoader::workerLoop()
   }
 }
 
-void  ChunkLoader::setCenter(const ChunkCoord& center)
+std::vector<ChunkCoord> ChunkLoader::setCenter(const ChunkCoord& center, int radius)
 {
   std::lock_guard<std::mutex> lock(mutex_);
+  
   currentCenter_ = center;
+  std::vector<ChunkCoord> removeChunks;
+
+  auto rmvIter = std::remove_if(
+    requests_.begin(),
+    requests_.end(),
+    [center, radius, &removeChunks](const ChunkCoord& coord)
+    {
+      if (isOutsideRadius(coord.x, coord.z, center, radius))
+      {
+        removeChunks.push_back(coord);
+        return true;
+      }
+      return false;
+    }
+  );
+  requests_.erase(rmvIter, requests_.end());
+  
+  return removeChunks;
 }
 
 void  ChunkLoader::setForward(const Vec3& forward)

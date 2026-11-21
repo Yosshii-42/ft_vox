@@ -38,10 +38,10 @@ private:
   ChunkLoader(const ChunkLoader& other) = delete;
   ChunkLoader& operator=(const ChunkLoader& other) = delete;
   
-  void  requestChunk(const ChunkCoord& coord);
-  bool  pollResult(ChunkResult& result);
-  void  setCenter(const ChunkCoord& center);
-  void  setForward(const Vec3& forward);
-  float calcPriority(const ChunkCoord& coord) const;
-  float calcDirectionDot(const ChunkCoord& coord) const;
+  void                    requestChunk(const ChunkCoord& coord);
+  bool                    pollResult(ChunkResult& result);
+  std::vector<ChunkCoord> setCenter(const ChunkCoord& center, int radius);
+  void                    setForward(const Vec3& forward);
+  float                   calcPriority(const ChunkCoord& coord) const;
+  float                   calcDirectionDot(const ChunkCoord& coord) const;
 };

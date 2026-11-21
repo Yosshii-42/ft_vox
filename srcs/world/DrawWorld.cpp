@@ -167,7 +167,12 @@ ChunkData*  DrawWorld::getMutableChunk(const ChunkCoord& coord)
 // チャンク生成要求
 void  DrawWorld::loadAround(const ChunkCoord& center)
 {
-  loader_.setCenter(center);
+  currentCenter_ = center;
+  auto removeChunks = loader_.setCenter(center, renderRadius_);
+
+  for (const ChunkCoord& coord: removeChunks)
+    pendingChunks_.erase(coord);
+
   for (int cy = 0; cy < WORLD_CHUNK_HEIGHT; ++cy)
   {
     for (int cz = center.z - renderRadius_; cz <= center.z + renderRadius_; ++cz)
@@ -204,8 +209,23 @@ void  DrawWorld::collectLoadedChunks()
   constexpr double  MAX_COLLECT_MS = 2.0;
   ChunkLoader::ChunkResult result;
 
-  while (loader_.pollResult(result))
+  while (true)
   {
+    auto  now = std::chrono::steady_clock::now();
+    double  elapsedMs = std::chrono::duration<double, std::milli>(now - start).count();
+
+    if (elapsedMs >= MAX_COLLECT_MS)
+      break;
+    
+    if (!loader_.pollResult(result))
+      break;
+
+    if (isOutsideRadius(result.coord.x, result.coord.z, currentCenter_, renderRadius_))
+    {
+      result.chunk.reset();
+      pendingChunks_.erase(result.coord);
+      continue;
+    }
     addChunk(result.coord, std::move(result.chunk));
     pendingChunks_.erase(result.coord);
 
@@ -225,19 +245,8 @@ void  DrawWorld::collectLoadedChunks()
       if (getChunk(neighbor) != nullptr)
         markChunkDirty(neighbor);
     }
-
-    auto  now = std::chrono::steady_clock::now();
-    
-    double  elapsedMs = std::chrono::duration<double, std::milli>(now - start).count();
-
-    if (elapsedMs > 5.0)
-    {
-      std::cout << "Single chunk: " << elapsedMs << " ms\n";
-    }
-    if (elapsedMs >= MAX_COLLECT_MS)
-      break;
-  }  
-}
+  }
+}  
 
 // 不要なチャンクの破棄
 void  DrawWorld::unloadFarChunks(int centerCx, int centerCz)
