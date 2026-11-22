@@ -20,4 +20,7 @@ namespace TexturePaths
     "textures/clouds1_north.bmp",
     "textures/clouds1_south.bmp"   
   };
+
+  const std::string fontset =
+    "textures/fontset.png";
 }

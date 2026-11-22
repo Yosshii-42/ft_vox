@@ -61,7 +61,8 @@ SRCS	= $(GLAD_DIR)/src/glad.c \
 				srcs/world/ChunkLoader.cpp \
 				srcs/world/SunMoon.cpp \
 				srcs/graphics/OpenGLSettings.cpp \
-				srcs/graphics/RenderHelpers.cpp
+				srcs/graphics/RenderHelpers.cpp \
+				srcs/graphics/Hud.cpp
 
 OBJS	= $(SRCS:.cpp=.o)
 OBJS	:= $(OBJS:.c=.o)

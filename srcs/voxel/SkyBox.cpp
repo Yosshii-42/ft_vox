@@ -10,7 +10,7 @@ SkyBox::SkyBox()
 SkyBox::~SkyBox()
 {
   if (textureID_ != 0)
-  glDeleteTextures(1, &textureID_);
+    glDeleteTextures(1, &textureID_);
   glDeleteBuffers(1, &VBO_);
   glDeleteVertexArrays(1, &VAO_);
 }
@@ -59,12 +59,12 @@ void  SkyBox::load(const std::vector<std::string>& paths)
       }
 
       glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                      0,
-                      GL_RGBA8,
-                      width, height, 0,
-                      GL_RGBA,
-                      GL_UNSIGNED_BYTE,
-                      pixels
+                   0,
+                   GL_RGBA8,
+                   width, height, 0,
+                   GL_RGBA,
+                   GL_UNSIGNED_BYTE,
+                   pixels
       );
 
       stbi_image_free(pixels);
@@ -79,8 +79,8 @@ void  SkyBox::load(const std::vector<std::string>& paths)
 
   glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // U
+  glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // V
   glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
   
   glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

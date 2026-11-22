@@ -35,5 +35,5 @@ void  main()
                 (ambientLight * ambientStrength +
                  vec3(diffuse) * sunLightStrength);
 
-  fragColor = vec4(result, texColor.a);
+  fragColor = vec4(result, 1.0);
 }

@@ -4,6 +4,7 @@
 #include "gl/Manipulator.hpp"
 #include "gl/Camera.hpp"
 #include "world/DrawWorld.hpp"
+#include "graphics/RenderHelpers.hpp"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -31,9 +32,12 @@ public:
   
   void  show();
   GLFWwindow* getWindow() const;
-  void  processInput(Camera& camera, float deltaTime, DrawWorld& world);
+  void  processInput(Camera& camera, float deltaTime,
+                     DrawWorld& world, RenderState& state);
   void  tabJudge();
   void  mouseOperate(Camera& camera);
   bool  shouldClose() const;
   float getAspectRatio() const;
+  int   getWidth() const;
+  int   getHeight() const;
 };
