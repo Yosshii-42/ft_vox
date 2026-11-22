@@ -93,7 +93,8 @@ GLFWwindow*  Window::getWindow() const
   return (window_);
 }
 
-void Window::processInput(Camera& camera, float deltaTime, DrawWorld& world)
+void Window::processInput(Camera& camera, float deltaTime,
+                          DrawWorld& world, RenderState& state)
 {
   // esc
 	if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -156,6 +157,15 @@ void Window::processInput(Camera& camera, float deltaTime, DrawWorld& world)
   // [3] Long(16チャンク)
   if (glfwGetKey(window_, GLFW_KEY_3) == GLFW_PRESS)
     world.setRenderRadius(16);
+
+  
+  // FPS hud
+  bool  is4Pressed = (glfwGetKey(window_, GLFW_KEY_4) == GLFW_PRESS);
+  if (is4Pressed && !state.is4KeyPressed)
+  {
+    state.hudVisible = !state.hudVisible;
+  }
+  state.is4KeyPressed = is4Pressed;
 }
 
 // tab判定
@@ -220,3 +230,12 @@ void  Window::framebufferSizeCallback(GLFWwindow *window, int width, int height)
   self->height_ = height;
 }
 
+  int Window::getWidth() const
+  {
+    return width_;
+  }
+
+  int Window::getHeight() const
+  {
+    return height_;
+  }

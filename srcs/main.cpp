@@ -1,6 +1,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <cstdlib>
 #include <ctime>
 #include <limits>
@@ -35,6 +37,7 @@ int main()
     Shader  worldShader("shaders/world.vert", "shaders/world.frag");
     Shader  crosshairShader("shaders/crosshair.vert", "shaders/crosshair.frag");
     Shader  skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
+    Shader  hudShader("shaders/hud.vert", "shaders/hud.frag");
     Crosshair crosshair;
     window.show();
 
@@ -47,6 +50,8 @@ int main()
     tex.load(TexturePaths::terrain);
     SkyBox  skybox;
     skybox.load(TexturePaths::skybox);
+    Hud     hud;
+    hud.load(TexturePaths::fontset);
 
     // 地形作成
     TerrainGenerator  generator(12345);
@@ -70,7 +75,7 @@ int main()
 
       // イベントとキー入力
       glfwPollEvents();
-      window.processInput(camera, deltaTime, world);
+      window.processInput(camera, deltaTime, world, state);
 
       // カメラ向き更新
       world.setForward(camera.getForward());
@@ -101,29 +106,39 @@ int main()
       
       // 描画
       Matrices    matrices = makeMatrices(camera, projection);
-      RenderStats stats = drawWorld(worldShader, tex, world, matrices, center, sunMoon);  
+      RenderStats stats = drawWorld(worldShader, tex, world, matrices, center, sunMoon); 
       drawSkybox(skyboxShader, skybox, matrices, sunMoon);
+      if (state.hudVisible == true)
+      {
+        drawHud(hudShader, hud, state.text, window.getWidth(), window.getHeight());
+      }
       drawCrosshair(crosshairShader, crosshair, aspectRatio);
-
-      glfwSwapBuffers(window.getWindow());
-
+      
       // Calculate and display rendering statistics every second.
-      #ifdef DEBUG_RENDER_STATS
       ++state.frameCount;
       double  elapsed = glfwGetTime() - state.fpsLastTime;
 
       if (elapsed >= 1.0)
       {
-        double  fps = static_cast<double>(state.frameCount) / elapsed;
-        std::cout << "FPS: " << fps
-                  << " | Vertices: " << stats.vertices
-                  << " | Draw Chunks: " << stats.chunks << std::endl;
-                  state.frameCount = 0;
-                  state.fpsLastTime = glfwGetTime();
+        state.fps = static_cast<double>(state.frameCount) / elapsed;
+        std::ostringstream  ossf;
+        ossf << std::fixed << std::setprecision(1) << state.fps;
+        std::string chunks = std::to_string(stats.chunks);
+        std::string vertices = std::to_string(stats.vertices);
+        state.memory = getMemoryUsageMiB();
+        std::ostringstream  ossm;
+        ossm << std::fixed << std::setprecision(1) << state.memory;
+        
+        state.text = "FPS: " + ossf.str() + "\n" +
+                     "CHUNKS: " + chunks + "\n" +
+                     "VERTICES: " + vertices + "\n" +
+                     "MEMORY: " + ossm.str() + " MiB";
+
+        state.frameCount = 0;
+        state.fpsLastTime = glfwGetTime();
       }
-      #else
-        (void)stats;
-      #endif
+
+      glfwSwapBuffers(window.getWindow());
     }
   }
   catch(const std::exception& e)

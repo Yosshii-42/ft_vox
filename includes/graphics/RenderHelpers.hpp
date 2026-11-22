@@ -12,6 +12,7 @@
 #include "world/SunMoon.hpp"
 #include "voxel/SkyBox.hpp"
 #include "voxel/VoxCommon.hpp"
+#include "graphics/Hud.hpp"
 
 struct RenderState
 {
@@ -22,10 +23,13 @@ struct RenderState
     std::numeric_limits<int>::max()   
   };
   int         lastRenderRadius = 0;
-  #ifdef DEBUG_RENDER_STATS
-    double  fpsLastTime = glfwGetTime();
-    int     frameCount = 0;
-  #endif
+  double      fpsLastTime = glfwGetTime();
+  int         frameCount = 0;
+  double      fps = 0.0;
+  bool        hudVisible = true;
+  bool        is4KeyPressed = false;
+  double      memory = 0.0;
+  std::string text;
 };
 
 struct Matrices
@@ -44,3 +48,6 @@ void        drawSkybox(Shader& skyboxShader, const SkyBox& skybox,
                        const Matrices& matrices, const SunMoon& sunMoon);
 void        drawCrosshair(Shader& crosshairShader, const Crosshair& crosshair,
                           float aspectRatio);
+void        drawHud(Shader& hudShader, const Hud& hud, const std::string& text,
+                    int screenWidth, int screenHeight);
+double      getMemoryUsageMiB();

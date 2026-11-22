@@ -1,4 +1,7 @@
 #include "graphics/RenderHelpers.hpp"
+#ifdef __APPLE__
+#include <mach/mach.h>
+#endif
 
 Matrices  makeMatrices(const Camera& camera, const Mat4& projection)
 {
@@ -50,9 +53,47 @@ void drawSkybox(Shader& skyboxShader, const SkyBox& skybox,
   skybox.draw(skyboxShader);
 }
 
-void        drawCrosshair(Shader& crosshairShader, const Crosshair& crosshair, float aspectRatio)
+void  drawCrosshair(Shader& crosshairShader, const Crosshair& crosshair, float aspectRatio)
 {
   glDisable(GL_DEPTH_TEST);
   crosshair.draw(crosshairShader, aspectRatio);
   glEnable(GL_DEPTH_TEST);  
+}
+
+void  drawHud(Shader& hudShader, const Hud& hud, const std::string& text,
+              int screenWidth, int screenHeight)
+{
+  hudShader.use();
+  // texture
+  hudShader.setInt("fontTexture", 0);
+  glActiveTexture(GL_TEXTURE0);
+  hud.bind();
+  // 行列作成
+  Mat4 projection = Mat4::ortho(0.0f, screenWidth, screenHeight, 0.0f, -1.0f, 1.0f);
+  hudShader.setMat4("projection", projection);
+
+  glDisable(GL_DEPTH_TEST);
+  hud.draw(hudShader, text, 20.0f, 20.0f, 16.0f, 32.0f);
+  glEnable(GL_DEPTH_TEST);
+}
+
+double      getMemoryUsageMiB()
+{
+#ifdef __APPLE__
+  mach_task_basic_info_data_t info;
+  mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+  kern_return_t result = task_info(
+    mach_task_self(),
+    MACH_TASK_BASIC_INFO,
+    reinterpret_cast<task_info_t>(&info),
+    &count
+  );
+  if (result != KERN_SUCCESS)
+    return 0.0;
+  double  memoryMiB = static_cast<double>(info.resident_size) / (1024.0 * 1024.0);
+  return memoryMiB;
+#elif defined(__linux__)
+  // todo
+#endif
+  return 0.0;
 }
