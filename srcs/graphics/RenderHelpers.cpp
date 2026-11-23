@@ -1,4 +1,5 @@
 #include "graphics/RenderHelpers.hpp"
+#include "world/DrawWorld.hpp"
 #ifdef __APPLE__
 #include <mach/mach.h>
 #endif
@@ -37,7 +38,7 @@ RenderStats drawWorld(Shader& shader, const TextureArray& tex,
   return stats;
 }
 
-void drawSkybox(Shader& skyboxShader, const SkyBox& skybox,
+void  drawSkybox(Shader& skyboxShader, const SkyBox& skybox,
                 const Matrices& matrices, const SunMoon& sunMoon)
 {
   skyboxShader.use();
@@ -77,23 +78,70 @@ void  drawHud(Shader& hudShader, const Hud& hud, const std::string& text,
   glEnable(GL_DEPTH_TEST);
 }
 
-double      getMemoryUsageMiB()
+double  getMemoryUsageMiB()
 {
 #ifdef __APPLE__
-  mach_task_basic_info_data_t info;
-  mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+  // mach_task_basic_info_data_t info;
+  // mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+  task_vm_info_data_t info{};
+  mach_msg_type_number_t  count = TASK_VM_INFO_COUNT;
+  // kern_return_t result = task_info(
+  //   mach_task_self(),
+  //   MACH_TASK_BASIC_INFO,
+  //   reinterpret_cast<task_info_t>(&info),
+  //   &count
+  // );
   kern_return_t result = task_info(
     mach_task_self(),
-    MACH_TASK_BASIC_INFO,
+    TASK_VM_INFO,
     reinterpret_cast<task_info_t>(&info),
     &count
   );
   if (result != KERN_SUCCESS)
     return 0.0;
-  double  memoryMiB = static_cast<double>(info.resident_size) / (1024.0 * 1024.0);
+  // double  memoryMiB = static_cast<double>(info.resident_size) / (1024.0 * 1024.0);
+  double  memoryMiB = static_cast<double>(info.phys_footprint) / (1024.0 * 1024.0);
   return memoryMiB;
 #elif defined(__linux__)
   // todo
 #endif
   return 0.0;
 }
+
+// Calculate and display rendering statistics every second.
+void  updateRenderState(RenderState& state, double currentTime,
+                        const DrawWorld& world, const RenderStats& stats)
+{
+  ++state.frameCount;
+  double  elapsed = currentTime - state.fpsLastTime;
+
+  if (elapsed < 1.0)
+    return;
+
+  state.fps = static_cast<double>(state.frameCount) / elapsed;
+  std::ostringstream  ossf;
+  ossf << std::fixed << std::setprecision(1) << state.fps;
+  std::string chunks = std::to_string(stats.chunks);
+  state.chunksCount = world.getLoaderChunkCount();
+  std::string loaderChunkCount = std::to_string(state.chunksCount);
+  std::string vertices = std::to_string(stats.vertices);
+  state.memory = getMemoryUsageMiB();
+  std::ostringstream  ossm;
+  ossm << std::fixed << std::setprecision(1) << state.memory;
+  state.requestsCount = world.getRequestsCount();
+  state.resultsCount = world.getResultsCount();
+  std::string requests = std::to_string(state.requestsCount);
+  std::string results = std::to_string(state.resultsCount);
+
+  state.text = "FPS: " + ossf.str() + "\n" +
+                "CHUNKS: " + chunks + "\n" +
+                "LOADER CHUNKS COUNT: " + loaderChunkCount + "\n" +
+                "VERTICES: " + vertices + "\n" +
+                "MEMORY: " + ossm.str() + " MiB" + "\n" +
+                "REQUESTS: " + requests + "\n" +
+                "RESULTS: " + results;
+
+  state.frameCount = 0;
+  state.fpsLastTime = currentTime;
+}
+

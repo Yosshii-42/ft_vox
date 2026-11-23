@@ -23,7 +23,7 @@ private:
   std::queue<ChunkResult> results_;   // ワーカー書き込み、メイン読み出し
   bool                    isFirstRequest_ = true;
 
-  std::mutex              mutex_;
+  mutable std::mutex      mutex_; // const 関数内でもロックできる
   std::condition_variable cv_;
   std::thread             worker_;
   const TerrainGenerator& generator_;
@@ -44,4 +44,6 @@ private:
   void                    setForward(const Vec3& forward);
   float                   calcPriority(const ChunkCoord& coord) const;
   float                   calcDirectionDot(const ChunkCoord& coord) const;
+  size_t                  getRequestsCount() const;
+  size_t                  getResultsCount() const;
 };

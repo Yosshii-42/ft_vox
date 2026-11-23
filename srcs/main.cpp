@@ -20,6 +20,7 @@
 #include "world/TerrainGenerator.hpp"
 #include "world/DrawWorld.hpp"
 #include "world/SunMoon.hpp"
+#include "world/ChunkLoader.hpp"
 #include "graphics/OpenGLSettings.hpp"
 #include "graphics/RenderHelpers.hpp"
 #include "TexturePaths.hpp"
@@ -70,7 +71,7 @@ int main()
     {
       // time
       double  currentTime = glfwGetTime();
-      float   deltaTime = static_cast<float>(currentTime - state.lastTime);
+      double  deltaTime = currentTime - state.lastTime;
       state.lastTime = currentTime;
 
       // イベントとキー入力
@@ -108,36 +109,13 @@ int main()
       Matrices    matrices = makeMatrices(camera, projection);
       RenderStats stats = drawWorld(worldShader, tex, world, matrices, center, sunMoon); 
       drawSkybox(skyboxShader, skybox, matrices, sunMoon);
+      updateRenderState(state, currentTime, world, stats);
       if (state.hudVisible == true)
       {
         drawHud(hudShader, hud, state.text, window.getWidth(), window.getHeight());
       }
       drawCrosshair(crosshairShader, crosshair, aspectRatio);
       
-      // Calculate and display rendering statistics every second.
-      ++state.frameCount;
-      double  elapsed = glfwGetTime() - state.fpsLastTime;
-
-      if (elapsed >= 1.0)
-      {
-        state.fps = static_cast<double>(state.frameCount) / elapsed;
-        std::ostringstream  ossf;
-        ossf << std::fixed << std::setprecision(1) << state.fps;
-        std::string chunks = std::to_string(stats.chunks);
-        std::string vertices = std::to_string(stats.vertices);
-        state.memory = getMemoryUsageMiB();
-        std::ostringstream  ossm;
-        ossm << std::fixed << std::setprecision(1) << state.memory;
-        
-        state.text = "FPS: " + ossf.str() + "\n" +
-                     "CHUNKS: " + chunks + "\n" +
-                     "VERTICES: " + vertices + "\n" +
-                     "MEMORY: " + ossm.str() + " MiB";
-
-        state.frameCount = 0;
-        state.fpsLastTime = glfwGetTime();
-      }
-
       glfwSwapBuffers(window.getWindow());
     }
   }

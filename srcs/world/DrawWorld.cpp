@@ -381,6 +381,22 @@ float DrawWorld::getTextureLayer(BlockID id, int face) const
   }
 }
 
+size_t  DrawWorld::getRequestsCount() const
+{
+  return loader_.getRequestsCount();
+}
+
+size_t  DrawWorld::getResultsCount() const
+{
+  return loader_.getResultsCount();
+}
+
+size_t  DrawWorld::getLoaderChunkCount() const
+{
+  return  chunks_.size();
+}
+
+
 // 頂点データ作成
 void  DrawWorld::calcGreedyVertexUVx(const ChunkCoord& coord,
                                   std::vector<Vertex>& vertices, int face) const
