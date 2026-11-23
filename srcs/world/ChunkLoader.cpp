@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <mutex>
 
 ChunkLoader::ChunkLoader(TerrainGenerator& generator)
   : generator_(generator)
@@ -164,3 +165,15 @@ float ChunkLoader::calcDirectionDot(const ChunkCoord& coord) const
                        coord.z - currentCenter_.z).normalize();
   return (currentForward_.dot(toChunk));  
 }
+
+  size_t  ChunkLoader::getRequestsCount() const
+  {
+    std::lock_guard<std::mutex>  lock(mutex_);
+    return requests_.size();
+  }
+
+  size_t  ChunkLoader::getResultsCount() const
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    return results_.size();
+  }

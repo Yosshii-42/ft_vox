@@ -8,11 +8,14 @@
 #include "gl/Shader.hpp"
 #include "gl/TextureArray.hpp"
 #include "gl/Crosshair.hpp"
-#include "world/DrawWorld.hpp"
+// #include "world/DrawWorld.hpp"
 #include "world/SunMoon.hpp"
 #include "voxel/SkyBox.hpp"
 #include "voxel/VoxCommon.hpp"
 #include "graphics/Hud.hpp"
+
+class DrawWorld;
+struct RenderStats;
 
 struct RenderState
 {
@@ -29,6 +32,9 @@ struct RenderState
   bool        hudVisible = true;
   bool        is4KeyPressed = false;
   double      memory = 0.0;
+  size_t      requestsCount = 0;
+  size_t      resultsCount = 0;
+  size_t      chunksCount = 0;
   std::string text;
 };
 
@@ -51,3 +57,5 @@ void        drawCrosshair(Shader& crosshairShader, const Crosshair& crosshair,
 void        drawHud(Shader& hudShader, const Hud& hud, const std::string& text,
                     int screenWidth, int screenHeight);
 double      getMemoryUsageMiB();
+void        updateRenderState(RenderState& state, double currentTime,
+                              const DrawWorld& world, const RenderStats& stats);

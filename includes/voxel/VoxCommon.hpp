@@ -4,7 +4,7 @@
 #include <iostream>
 
 // chunk size
-constexpr int VOXEL_CHUNK_SIZE = 32;
+constexpr int VOXEL_CHUNK_SIZE = 16;
 constexpr int VOXEL_CHUNK_VOLUME =
                 VOXEL_CHUNK_SIZE * VOXEL_CHUNK_SIZE * VOXEL_CHUNK_SIZE;
 

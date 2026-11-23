@@ -74,7 +74,11 @@ public:
   // block ID
   BlockID           getBlock(int bx, int by, int bz) const;
   // get Layer
-  float getTextureLayer(BlockID id, int face) const;
+  float             getTextureLayer(BlockID id, int face) const;
+  // get count
+  size_t            getRequestsCount() const;
+  size_t            getResultsCount() const;
+  size_t            getLoaderChunkCount() const;
 
   // vertices作成
   void  calcGreedyVertexUVx(const ChunkCoord& coord, std::vector<Vertex>& vertices, int face) const;
