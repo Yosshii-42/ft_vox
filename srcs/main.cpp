@@ -44,7 +44,7 @@ int main()
 
     // camera作成
     Camera  camera;
-    camera.setPosition(Vec3(16.0f, 35.0f, 16.0f));
+    camera.setPosition(Vec3(16.0f, 100.0f, 16.0f));
 
     // 画像読み込み
     TextureArray  tex;

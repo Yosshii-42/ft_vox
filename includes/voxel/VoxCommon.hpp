@@ -17,11 +17,16 @@ constexpr BlockID BLOCK_STONE   = 2;
 constexpr BlockID BLOCK_BEDROCK = 3;
 
 constexpr BlockID BLOCK_DIRT_TOP  = 4;
+constexpr BlockID BLOCK_WOOD = 5;
+constexpr BlockID BLOCK_WOOD_TOP = 6;
+constexpr BlockID BLOCK_LEAVES = 7;
+
 // constexpr BlockID BLOCK_SAND    = 4;
-constexpr BlockID BLOCK_SNOW    = 5;
-constexpr BlockID BLOCK_WATER   = 6;
-constexpr BlockID BLOCK_MAGMA   = 7;
-constexpr BlockID BLOCK_CRISTAL = 8;
+// constexpr BlockID BLOCK_SNOW    = 5;
+// constexpr BlockID BLOCK_WATER   = 6;
+// constexpr BlockID BLOCK_MAGMA   = 7;
+// constexpr BlockID BLOCK_CRISTAL = 8;
+
 
 constexpr BlockID BLOCK_ERROR = 255;
 

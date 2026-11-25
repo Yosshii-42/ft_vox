@@ -6,10 +6,13 @@
 namespace TexturePaths
 {
   const std::vector<std::string> terrain = {
-    "textures/dirt.png",
-    "textures/stone.png",
-    "textures/bedrock.png",
-    "textures/dirt_top.png"
+    "textures/dirt.png",      // 0
+    "textures/stone.png",     // 1
+    "textures/bedrock.png",   // 2
+    "textures/dirt_top.png",  // 3
+    "textures/wood.png",      // 4
+    "textures/wood_top.png",  // 5
+    "textures/leaves.png"     // 6
   };
 
   const std::vector<std::string> skybox = {
