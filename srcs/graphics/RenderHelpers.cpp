@@ -74,23 +74,15 @@ void  drawHud(Shader& hudShader, const Hud& hud, const std::string& text,
   hudShader.setMat4("projection", projection);
 
   glDisable(GL_DEPTH_TEST);
-  hud.draw(hudShader, text, 20.0f, 20.0f, 16.0f, 32.0f);
+  hud.draw(hudShader, text, 20.0f, 20.0f, 8.0f, 16.0f);
   glEnable(GL_DEPTH_TEST);
 }
 
 double  getMemoryUsageMiB()
 {
 #ifdef __APPLE__
-  // mach_task_basic_info_data_t info;
-  // mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
   task_vm_info_data_t info{};
   mach_msg_type_number_t  count = TASK_VM_INFO_COUNT;
-  // kern_return_t result = task_info(
-  //   mach_task_self(),
-  //   MACH_TASK_BASIC_INFO,
-  //   reinterpret_cast<task_info_t>(&info),
-  //   &count
-  // );
   kern_return_t result = task_info(
     mach_task_self(),
     TASK_VM_INFO,
@@ -99,7 +91,6 @@ double  getMemoryUsageMiB()
   );
   if (result != KERN_SUCCESS)
     return 0.0;
-  // double  memoryMiB = static_cast<double>(info.resident_size) / (1024.0 * 1024.0);
   double  memoryMiB = static_cast<double>(info.phys_footprint) / (1024.0 * 1024.0);
   return memoryMiB;
 #elif defined(__linux__)

@@ -369,15 +369,15 @@ float DrawWorld::getTextureLayer(BlockID id, int face) const
   switch (id)
   {
   case BLOCK_DIRT:
-    if (face == 3)      return 4.0f;
-    return 0.0f;
-  case BLOCK_STONE:     return 1.0f;
-  case BLOCK_BEDROCK:   return 2.0f;
-  // case BLOCK_SNOW:      return 4.0f;
-  case BLOCK_WATER:     return 5.0f;
-  case BLOCK_MAGMA:     return 6.0f;
-  case BLOCK_CRISTAL:   return 7.0f;
-  default:              return 0.0f;
+    if (face == 3)              return 3.0f;  // dirt_top.png
+    return 0.0f;                              // dirt.png
+  case BLOCK_STONE:             return 1.0f;  // stone.png
+  case BLOCK_BEDROCK:           return 2.0f;  // bedrock.png
+  case BLOCK_WOOD:
+    if (face == 2 || face == 3) return 5.0f;  // BLOCK_WOOD_TOP
+    return 4.0f;                              // wood.png
+  case BLOCK_LEAVES:            return 6.0f;  // leaves.png
+  default:                      return 0.0f;
   }
 }
 

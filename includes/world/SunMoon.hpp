@@ -5,7 +5,7 @@
 class SunMoon {
 private:
 #ifdef DEBUG_FAST_DAY_NIGHT
-  static constexpr float  SUN_CYCLE_TIME = 20.0f;
+  static constexpr float  SUN_CYCLE_TIME = 360.0f;
 #else
   static constexpr float  SUN_CYCLE_TIME = 120.0f;
 #endif

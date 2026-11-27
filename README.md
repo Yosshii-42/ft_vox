@@ -139,40 +139,74 @@ The project is organized into modules based on their responsibilities.
 
 ## Main features
 
-### Mandatory
-- OpenGL 3.3 Core Profile rendering
-- Model, view, and projection transformations
-- Perspective projection with aspect-ratio correction
-- Depth testing
-- Texture mapping
-- Load and apply image textures using OpenGL
-- Object rotation, translation, and scaling using keyboard controls
-- GLSL vertex and fragment shaders
+## Features
 
-### Bonus: 
+### Rendering
+- OpenGL 3.3 Core Profile
+- First-person camera controls
+- Fullscreen rendering
+- Chunk-based voxel rendering
+- Texture arrays for multiple block types
+- Face-dependent block textures
 
+### Rendering Optimization
+- Hidden face culling
+- Chunk boundary face culling
+- Greedy meshing
+- Frustum culling
+- Dirty chunk management
+- Selective chunk mesh rebuilding
+- Efficient VBO updates
 
-### Bonus: 
+### World Management
+- Dynamic chunk loading and unloading
+- Multithreaded chunk generation
+- Distance-based chunk generation priority
+- Camera direction-based chunk generation priority
+- Duplicate chunk request prevention
+- Memory management through distant chunk unloading
+- Configurable render distance
 
+### Procedural Terrain Generation
+- Deterministic, seed-based terrain generation
+- Multi-scale Perlin noise
+- Rolling hills and mountainous terrain
+- Layered terrain with bedrock, stone, and dirt
+- Procedural tree generation
+- Multi-layer tree canopies
+- Terrain-independent canopy geometry
+- Tree generation across chunk boundaries
+- Optimized terrain height calculations
 
-### Bonus: 
+### Lighting and Environment
+- Skybox
+- Ambient lighting
+- Directional lighting
+- Dynamic day-night cycle
+<!-- - Sun and moon rendering
+- Night sky with stars -->
 
+### HUD and Debug Information
+- Real-time FPS counter
+- Rendered chunk count
+- Loaded chunk count
+- Rendered vertex count
+- Process memory usage
+- Pending chunk request count
+- Completed chunk generation queue count
+- Toggleable HUD
 
-### Additional Feature: Mesh Diagnostics
-
+### Block Types
+- Air
+- Bedrock
+- Stone
+- Dirt
+<!-- - Grass-covered dirt -->
+- Wood
+- Leaves
 
 ### Demonstration
 
-- Planar star: Demonstrates the difference between Triangle Fan and Ear Clipping triangulation.
-- Non-coplanar pentagon: Demonstrates triangulation and rendering of a non-coplanar polygon.
-- Non-coplanar star: Demonstrates the combined handling of concave and non-coplanar geometry.
-
-Triangle Fan triangulation is retained for comparison during evaluation.
-To compare Triangle Fan and Ear Clipping triangulation, switch the function call in Object::setVertexData() and rebuild the project.
-
-By default, Ear Clipping triangulation is enabled.
-
-Limitation: The triangulation assumes that the polygon has a valid, non-self-intersecting 2D projection. Arbitrary non-coplanar polygons may require additional handling.
 
 ## Controls
 

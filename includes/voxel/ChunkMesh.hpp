@@ -10,7 +10,7 @@ struct Vertex {
   float x, y, z;
   float u, v;
   float layer;  // テクスチャレイヤー番号
-  float face;   // 面の方向（0〜5）
+  float face;   // 面の方向（0〜5） -x, x, -y, y, -z, z
 };
 
 class ChunkMesh {
