@@ -10,7 +10,7 @@ private:
   Vec3  position_;
   float yaw_;
   float pitch_;
-  float moveSpeed_ = 5.0f;
+  float moveSpeed_ = 1.0f;
   float rotationSpeed_ = Mat4::radians(90.0f);
   // float distance_;
   float fov_;

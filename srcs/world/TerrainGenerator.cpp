@@ -23,22 +23,25 @@ void  TerrainGenerator::generateChunk(int cx, int cy, int cz,
     int worldZ = cz * VOXEL_CHUNK_SIZE + z;
     int treeZ = static_cast<int>(std::floor((worldZ + 4) / 8.0)) * 8;
     int dz = std::abs(worldZ - treeZ);
-    int preTreeX = std::numeric_limits<int>::max();
+
     if (preTreeZ !=treeZ)
+    {
       preTreeZ = treeZ;
-    int heightCenter = 0;
+      for (int i = 0; i < 3; ++i)
+      {
+        int treeX = cx * VOXEL_CHUNK_SIZE + 8 * i;
+        treeHeights[i] = getGroundHeight(treeX, preTreeZ) + trunkHeight;
+      }
+    }
     
     for (int x = 0; x < VOXEL_CHUNK_SIZE; ++x)
     {
-      int worldX = cx * VOXEL_CHUNK_SIZE + x;        
-      int treeX = static_cast<int>(std::floor((worldX + 4) / 8.0)) * 8;
-      if (preTreeX != treeX)
-      {
-        preTreeX = treeX;
-        heightCenter = getGroundHeight(treeX, preTreeZ) + trunkHeight;
-      }
-      int dx = std::abs(worldX - treeX);
-      int groundHeight = getGroundHeight(worldX, worldZ);
+      int       worldX = cx * VOXEL_CHUNK_SIZE + x;        
+      int       treeX = static_cast<int>(std::floor((worldX + 4) / 8.0)) * 8;
+      int       index = (treeX - cx * VOXEL_CHUNK_SIZE) / 8;
+      const int heightCenter = treeHeights[index];
+      int       dx = std::abs(worldX - treeX);
+      int       groundHeight = getGroundHeight(worldX, worldZ);
       
       for (int y = 0; y < VOXEL_CHUNK_SIZE; ++y)
       {
